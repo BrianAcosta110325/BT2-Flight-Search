@@ -1,0 +1,9 @@
+services:
+  backend:
+    build: ./flight-search-be
+    ports:
+      - "8080:8080"
+  frontend:
+    build: ./flight-search-fe
+    ports:
+      - "3000:80"
