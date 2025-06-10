@@ -7,17 +7,15 @@ plugins {
 group = "com.encora"
 version = "0.0.1-SNAPSHOT"
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(24)
-	}
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+    runtimeClasspath {
+        extendsFrom(configurations.developmentOnly.get())
+    }
 }
 
-configurations {
-	compileOnly {
-		extendsFrom(configurations.annotationProcessor.get())
-	}
-}
 
 repositories {
 	mavenCentral()
