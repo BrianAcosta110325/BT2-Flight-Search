@@ -1,5 +1,6 @@
 package com.encora.flight_search_be.client;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value; 
@@ -31,6 +32,8 @@ public class AmadeusClient {
             String body = "grant_type=client_credentials" +
                     "&client_id=" + clientId +
                     "&client_secret=" + clientSecret;
+
+            System.out.println(body);
 
             HttpEntity<String> request = new HttpEntity<>(body, headers);
 
@@ -94,5 +97,34 @@ public class AmadeusClient {
             requestEntity,
             String.class
         );
+    }
+
+    public String searchAirportByCode(String code) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(getAccessToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String url = "https://test.api.amadeus.com/v1/reference-data/locations?subType=AIRPORT&keyword=" + code;
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> response = restTemplate.exchange(
+            url,
+            HttpMethod.GET,
+            requestEntity,
+            Map.class
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> responseBody = response.getBody();
+            if (responseBody != null && responseBody.containsKey("data")) {
+                List<Map<String, Object>> data = (List<Map<String, Object>>) responseBody.get("data");
+                if (!data.isEmpty()) {
+                    return (String) data.get(0).get("name");
+                }
+            }
+        }
+
+        throw new RuntimeException("No se encontró el aeropuerto con código: " + code);
     }
 }
