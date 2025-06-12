@@ -33,8 +33,6 @@ public class AmadeusClient {
                     "&client_id=" + clientId +
                     "&client_secret=" + clientSecret;
 
-            System.out.println(body);
-
             HttpEntity<String> request = new HttpEntity<>(body, headers);
 
             ResponseEntity<Map> response = restTemplate.exchange(
