@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./flight-search-be
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./flight-search-be:/app
+    working_dir: /app
+    ports:
+      - 8080:8080
+    command: ./gradlew bootRun
+
+  frontend:
+    build:
+      context: ./flight-search-fe
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./flight-search-fe:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+    command: npm start

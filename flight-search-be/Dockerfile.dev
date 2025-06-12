@@ -1,0 +1,7 @@
+FROM gradle:8.14-jdk24
+
+USER root
+
+WORKDIR /app
+COPY . .
+CMD ["./gradlew", "bootRun"]
