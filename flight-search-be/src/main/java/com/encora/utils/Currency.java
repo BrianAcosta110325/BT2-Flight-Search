@@ -1,4 +1,4 @@
-package main.java.com.encora.utils;
+package com.encora.utils;
 
 
 public enum Currency {
