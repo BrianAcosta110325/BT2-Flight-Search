@@ -1,17 +1,7 @@
 package com.encora.flight_search_be.client;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value; 
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -83,6 +73,26 @@ public class AmadeusClient {
                 HttpMethod.GET,
                 requestEntity,
                 String.class
+        );
+    }
+
+    public ResponseEntity<String> searchAirports(String query) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(getAccessToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String url = "https://test.api.amadeus.com/v1/reference-data/locations"
+                + "?keyword=" + query
+                + "&subType=AIRPORT"
+                + "&page[limit]=10";
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        return restTemplate.exchange(
+            url,
+            HttpMethod.GET,
+            requestEntity,
+            String.class
         );
     }
 }

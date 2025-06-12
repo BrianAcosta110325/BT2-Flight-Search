@@ -13,4 +13,6 @@ public interface FlightService {
         String currency,
         boolean nonStop
     );
+
+    List<String> searchAirports(String query);
 }

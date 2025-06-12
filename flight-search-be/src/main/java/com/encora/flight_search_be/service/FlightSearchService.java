@@ -76,4 +76,24 @@ public class FlightSearchService implements FlightService {
 
         return result;
     }
+
+    @Override
+    public List<String> searchAirports(String query) {
+        ResponseEntity<String> response = amadeusClient.searchAirports(query);
+
+        List<String> result = new ArrayList<>();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+            JsonNode data = root.path("data");
+
+            for (JsonNode airport : data) {
+                result.add(airport.path("iataCode").asText() + " - " + airport.path("name").asText());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

@@ -21,7 +21,7 @@ public class FlightSearchController {
     @Autowired
     private FlightSearchService flightService;
     
-    @GetMapping("/search_flights")
+    @GetMapping("/searchFlights")
     public List<FlightSearchResponseDto> searchFlights(
         @RequestParam() String departureCode,
         @RequestParam() String arrivalCode, 
@@ -41,5 +41,19 @@ public class FlightSearchController {
             currency, 
             nonStops != null ? nonStops : false
         );
+    }
+
+    @GetMapping("/searchAirports")
+    public List<String> searchAirports(@RequestParam() String query) {
+        // Normalize the query to handle accents and special characters
+        String normalizedQuery = query
+            .toLowerCase()
+            .replaceAll("[áàäâ]", "a")
+            .replaceAll("[éèëê]", "e")
+            .replaceAll("[íìïî]", "i")
+            .replaceAll("[óòöô]", "o")
+            .replaceAll("[úùüû]", "u")
+            .replaceAll("ñ", "n");
+        return this.flightService.searchAirports(normalizedQuery);
     }
 }
