@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value; 
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -23,6 +24,7 @@ public class AmadeusClient {
 
     private final String tokenUrl = "https://test.api.amadeus.com/v1/security/oauth2/token";
     private final String flightSearchUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
+    private final String airportSearchUrl = "https://test.api.amadeus.com/v1/reference-data/locations";
 
     public String getAccessToken() {
         if (accessToken == null || System.currentTimeMillis() > tokenExpiration) {
@@ -68,13 +70,19 @@ public class AmadeusClient {
         }
 
         String url = urlBuilder.toString();
-
-        return restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                requestEntity,
-                String.class
-        );
+        
+        try {
+            return restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    requestEntity,
+                    String.class
+            );
+        } catch (HttpClientErrorException.TooManyRequests e) {
+            throw new RuntimeException("Error al buscar vuelos: " + e.getMessage(), e);
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Error al consultar la API de Amadeus: " + e.getStatusCode());
+        }
     }
 
     public ResponseEntity<String> searchAirports(String query) {
@@ -82,7 +90,7 @@ public class AmadeusClient {
         headers.setBearerAuth(getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String url = "https://test.api.amadeus.com/v1/reference-data/locations"
+        String url = airportSearchUrl
                 + "?keyword=" + query
                 + "&subType=AIRPORT"
                 + "&page[limit]=10";
@@ -102,7 +110,7 @@ public class AmadeusClient {
         headers.setBearerAuth(getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String url = "https://test.api.amadeus.com/v1/reference-data/locations?subType=AIRPORT&keyword=" + code;
+        String url = airportSearchUrl + "?subType=AIRPORT&keyword=" + code;
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
