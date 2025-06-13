@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import com.encora.flight_search_be.client.AmadeusClient;
+// import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto.AmenityDto;
+// import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto.FeeDto;
+// import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
 import com.encora.flight_search_be.dto.FlightSearchStopDto;
 import com.encora.utils.DurationUtils;
@@ -61,6 +64,8 @@ public class FlightSearchService implements FlightService {
                 JsonNode lastSegment = segments.get(segments.size() - 1);
         
                 FlightSearchResponseDto dto = new FlightSearchResponseDto();
+
+                dto.setId(response.getHeaders().getFirst("id"));
         
                 // Airports
                 String rDepartureCode = firstSegment.path("departure").path("iataCode").asText();
@@ -125,6 +130,136 @@ public class FlightSearchService implements FlightService {
 
         return result;
     }
+
+    // @Override
+    // public FlightSearchDetailedResponseDto searchFlightById(String flightId, Map<String, String> params) {
+    //     ResponseEntity<String> response = amadeusClient.searchFlights(params);
+    //     FlightSearchDetailedResponseDto dto = new FlightSearchDetailedResponseDto();
+
+    //     try {
+    //         ObjectMapper mapper = new ObjectMapper();
+    //         JsonNode root = mapper.readTree(response.getBody());
+    //         JsonNode data = root.path("data");
+
+    //         for (JsonNode flight : data) {
+    //             if (flight.path("id").asText().equals(flightId)) {
+    //                 dto.setId(flightId);
+
+    //                 JsonNode itinerary = flight.path("itineraries").get(0);
+    //                 JsonNode segments = itinerary.path("segments");
+    //                 JsonNode firstSegment = segments.get(0);
+    //                 JsonNode lastSegment = segments.get(segments.size() - 1);
+
+    //                 // Airport codes
+    //                 String departureCode = firstSegment.path("departure").path("iataCode").asText();
+    //                 String arrivalCode = lastSegment.path("arrival").path("iataCode").asText();
+    //                 dto.setDepartureAirportCode(departureCode);
+    //                 dto.setArrivalAirportCode(arrivalCode);
+    //                 dto.setDepartureAirportName(amadeusClient.searchAirportByCode(departureCode));
+    //                 dto.setArrivalAirportName(amadeusClient.searchAirportByCode(arrivalCode));
+
+    //                 // Tiempos
+    //                 dto.setDepartureDateTime(firstSegment.path("departure").path("at").asText());
+    //                 dto.setArrivalDateTime(lastSegment.path("arrival").path("at").asText());
+
+    //                 // Aerolínea principal
+    //                 String carrierCode = firstSegment.path("carrierCode").asText();
+    //                 dto.setAirlineCode(carrierCode);
+    //                 dto.setAirlineName(root.path("dictionaries").path("carriers").path(carrierCode).asText());
+
+    //                 // Aerolínea operadora
+    //                 JsonNode operatingNode = firstSegment.path("operating");
+    //                 if (!operatingNode.isMissingNode()) {
+    //                     String opCode = operatingNode.path("carrierCode").asText();
+    //                     dto.setOperatingAirlineCode(opCode);
+    //                     dto.setOperatingAirlineName(root.path("dictionaries").path("carriers").path(opCode).asText());
+    //                 }
+
+    //                 // Duración total
+    //                 dto.setTotalFlightDuration(DurationUtils.formatDuration(itinerary.path("duration").asText()));
+
+    //                 // Paradas y layovers
+    //                 List<FlightSearchStopDto> stops = new ArrayList<>();
+    //                 for (int i = 1; i < segments.size(); i++) {
+    //                     JsonNode prev = segments.get(i - 1);
+    //                     JsonNode curr = segments.get(i);
+
+    //                     String stopCode = prev.path("arrival").path("iataCode").asText();
+    //                     // String layoverTime = DurationUtils.calculateLayover(
+    //                     //         prev.path("arrival").path("at").asText(),
+    //                     //         curr.path("departure").path("at").asText()
+    //                     // );
+
+    //                     // FlightSearchStopDto stopDto = new FlightSearchStopDto();
+    //                     // stopDto.setAirportCode(stopCode);
+    //                     // stopDto.setAirportName(amadeusClient.searchAirportByCode(stopCode));
+    //                     // stopDto.setLayoverDuration(layoverTime);
+
+    //                     // stops.add(stopDto);
+    //                 }
+    //                 // dto.setStops(stops);
+
+    //                 // Detalles de tarifa
+    //                 // List<FlightFareDetailsDto> fareDetailsList = new ArrayList<>();
+    //                 // JsonNode fareDetailsBySegment = flight.path("travelerPricings").get(0).path("fareDetailsBySegment");
+
+    //                 // for (JsonNode segmentFare : fareDetailsBySegment) {
+    //                 //     FlightFareDetailsDto fareDto = new FlightFareDetailsDto();
+    //                 //     fareDto.setSegmentId(segmentFare.path("segmentId").asText());
+    //                 //     fareDto.setCabin(segmentFare.path("cabin").asText());
+    //                 //     fareDto.setTravelClass(segmentFare.path("class").asText());
+
+    //                 //     // Equipaje
+    //                 //     if (segmentFare.has("includedCheckedBags")) {
+    //                 //         fareDto.setIncludedCheckedBags(segmentFare.path("includedCheckedBags").path("quantity").asInt());
+    //                 //     }
+    //                 //     if (segmentFare.has("includedCabinBags")) {
+    //                 //         fareDto.setIncludedCabinBags(segmentFare.path("includedCabinBags").path("quantity").asInt());
+    //                 //     }
+
+    //                 //     // Amenities
+    //                 //     List<AmenityDto> amenities = new ArrayList<>();
+    //                 //     if (segmentFare.has("amenities")) {
+    //                 //         for (JsonNode amenity : segmentFare.path("amenities")) {
+    //                 //             AmenityDto a = new AmenityDto();
+    //                 //             a.setName(amenity.path("description").asText());
+    //                 //             a.setChargeable(amenity.path("isChargeable").asBoolean());
+    //                 //             amenities.add(a);
+    //                 //         }
+    //                 //     }
+    //                 //     fareDto.setAmenities(amenities);
+
+    //                 //     fareDetailsList.add(fareDto);
+    //                 // }
+    //                 // dto.setFareDetails(fareDetailsList);
+
+    //                 // Precio
+    //                 JsonNode price = flight.path("price");
+    //                 String currency = price.path("currency").asText();
+    //                 dto.setBasePrice(price.path("base").asText() + " " + currency);
+    //                 dto.setTotalPrice(price.path("total").asText() + " " + currency);
+    //                 dto.setPricePerTraveler(price.path("total").asText() + " " + currency);
+
+    //                 List<FeeDto> fees = new ArrayList<>();
+    //                 for (JsonNode fee : price.path("fees")) {
+    //                     FeeDto f = new FeeDto();
+    //                     f.setAmount(fee.path("amount").asText());
+    //                     f.setType(fee.path("type").asText());
+    //                     fees.add(f);
+    //                 }
+    //                 dto.setFees(fees);
+
+    //                 break;
+    //             }
+    //         }
+
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+
+    //     return dto;
+    // }
+
 
     @Override
     public List<String> searchAirports(String query) {

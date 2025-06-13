@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
+// import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
 import com.encora.flight_search_be.service.FlightSearchService;
 
@@ -42,6 +43,12 @@ public class FlightSearchController {
             nonStops != null ? nonStops : false
         );
     }
+
+    // @GetMapping("searchFlightById/:id")
+    // public FlightSearchDetailedResponseDto searchFlightById(@RequestParam String param, @RequestParam String id) {
+    //     return searchFlightById(param, id);
+    // }
+    
 
     @GetMapping("/searchAirports")
     public List<String> searchAirports(@RequestParam() String query) {

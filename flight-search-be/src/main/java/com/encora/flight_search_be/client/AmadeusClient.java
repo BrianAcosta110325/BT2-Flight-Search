@@ -3,7 +3,8 @@ package com.encora.flight_search_be.client;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value; 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -57,6 +58,7 @@ public class AmadeusClient {
         return accessToken;
     }
 
+    @Cacheable(value = "flightSearch", key = "#params.toString()")
     public ResponseEntity<String> searchFlights(Map<String, String> params) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(getAccessToken());
@@ -85,6 +87,19 @@ public class AmadeusClient {
         }
     }
 
+    // public ResponseEntity<String> searchFlightById(String fligthId, Map<String, String> params) {
+    //     ResponseEntity<String> response = searchFlights(params);
+
+
+
+    //     return restTemplate.exchange(
+    //         url,
+    //         HttpMethod.GET,
+    //         requestEntity,
+    //         String.class
+    //     );
+    // }
+
     public ResponseEntity<String> searchAirports(String query) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(getAccessToken());
@@ -105,6 +120,7 @@ public class AmadeusClient {
         );
     }
 
+    @Cacheable(value = "airportByCode", key = "#code")
     public String searchAirportByCode(String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(getAccessToken());
@@ -131,6 +147,6 @@ public class AmadeusClient {
             }
         }
 
-        throw new RuntimeException("No se encontró el aeropuerto con código: " + code);
+        return "";
     }
 }
