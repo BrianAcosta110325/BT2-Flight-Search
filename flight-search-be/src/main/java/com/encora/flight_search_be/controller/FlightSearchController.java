@@ -56,4 +56,9 @@ public class FlightSearchController {
             .replaceAll("ñ", "n");
         return this.flightService.searchAirports(normalizedQuery);
     }
+
+    @GetMapping("/searchAirportByCode")
+    public String searchAirportByCode(@RequestParam() String code) {
+        return this.flightService.searchAirportByCode(code);
+    }
 }

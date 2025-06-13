@@ -1,29 +1,61 @@
 package com.encora.flight_search_be.dto;
 
+import java.util.List;
+
 public class FlightSearchResponseDto {
-    private String originAirport;
-    private String destinationAirport;
+    private String departureAirportName;
+    private String departureAirportCode;
+    private String arrivalAirportName;
+    private String arrivalAirportCode;
+    
     private String departureDateTime;
     private String arrivalDateTime;
-    private String airline;
-    private String duration;
-    private String price;
+
+    private String airlineName;
+    private String airlineCode;
+
+    private String operatingAirlineName;
+    private String operatingAirlineCode;
+
+    private String totalFlightDuration;
+
+    private List<FlightSearchStopDto> stops;
+
+    private String totalPrice;
     private String pricePerTraveler;
-    private boolean nonStop;
 
-    public String getOriginAirport() {
-        return originAirport;
-    }
-    public void setOriginAirport(String originAirport) {
-        this.originAirport = originAirport;
+    // Getters and Setters
+
+    public String getDepartureAirportName() {
+        return departureAirportName;
     }
 
-    public String getDestinationAirport() {
-        return destinationAirport;
+    public void setDepartureAirportName(String departureAirportName) {
+        this.departureAirportName = departureAirportName;
     }
 
-    public void setDestinationAirport(String destinationAirport) {
-        this.destinationAirport = destinationAirport;
+    public String getDepartureAirportCode() {
+        return departureAirportCode;
+    }
+
+    public void setDepartureAirportCode(String departureAirportCode) {
+        this.departureAirportCode = departureAirportCode;
+    }
+
+    public String getArrivalAirportName() {
+        return arrivalAirportName;
+    }
+
+    public void setArrivalAirportName(String arrivalAirportName) {
+        this.arrivalAirportName = arrivalAirportName;
+    }
+
+    public String getArrivalAirportCode() {
+        return arrivalAirportCode;
+    }
+
+    public void setArrivalAirportCode(String arrivalAirportCode) {
+        this.arrivalAirportCode = arrivalAirportCode;
     }
 
     public String getDepartureDateTime() {
@@ -42,28 +74,60 @@ public class FlightSearchResponseDto {
         this.arrivalDateTime = arrivalDateTime;
     }
 
-    public String getAirline() {
-        return airline;
+    public String getAirlineName() {
+        return airlineName;
     }
 
-    public void setAirline(String airline) {
-        this.airline = airline;
+    public void setAirlineName(String airlineName) {
+        this.airlineName = airlineName;
     }
 
-    public String getDuration() {
-        return duration;
+    public String getAirlineCode() {
+        return airlineCode;
     }
 
-    public void setDuration(String duration) {
-        this.duration = duration;
+    public void setAirlineCode(String airlineCode) {
+        this.airlineCode = airlineCode;
     }
 
-    public String getPrice() {
-        return price;
+    public String getOperatingAirlineName() {
+        return operatingAirlineName;
     }
 
-    public void setPrice(String price) {
-        this.price = price;
+    public void setOperatingAirlineName(String operatingAirlineName) {
+        this.operatingAirlineName = operatingAirlineName;
+    }
+
+    public String getOperatingAirlineCode() {
+        return operatingAirlineCode;
+    }
+
+    public void setOperatingAirlineCode(String operatingAirlineCode) {
+        this.operatingAirlineCode = operatingAirlineCode;
+    }
+
+    public String getTotalFlightDuration() {
+        return totalFlightDuration;
+    }
+
+    public void setTotalFlightDuration(String totalFlightDuration) {
+        this.totalFlightDuration = totalFlightDuration;
+    }
+
+    public List<FlightSearchStopDto> getStops() {
+        return stops;
+    }
+
+    public void setStops(List<FlightSearchStopDto> stops) {
+        this.stops = stops;
+    }
+
+    public String getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(String totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public String getPricePerTraveler() {
@@ -72,13 +136,5 @@ public class FlightSearchResponseDto {
 
     public void setPricePerTraveler(String pricePerTraveler) {
         this.pricePerTraveler = pricePerTraveler;
-    }
-
-    public boolean isNonStop() {
-        return nonStop;
-    }
-
-    public void setNonStop(boolean nonStop) {
-        this.nonStop = nonStop;
     }
 }

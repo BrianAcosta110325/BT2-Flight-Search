@@ -15,4 +15,6 @@ public interface FlightService {
     );
 
     List<String> searchAirports(String query);
+
+    String searchAirportByCode(String code);
 }
