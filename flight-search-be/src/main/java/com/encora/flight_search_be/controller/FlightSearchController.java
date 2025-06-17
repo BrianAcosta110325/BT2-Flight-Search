@@ -5,12 +5,13 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
-// import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
+import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
 import com.encora.flight_search_be.service.FlightSearchService;
 
@@ -44,10 +45,26 @@ public class FlightSearchController {
         );
     }
 
-    // @GetMapping("searchFlightById/:id")
-    // public FlightSearchDetailedResponseDto searchFlightById(@RequestParam String param, @RequestParam String id) {
-    //     return searchFlightById(param, id);
-    // }
+    @GetMapping("/searchFlightById/{id}")
+    public FlightSearchDetailedResponseDto searchFlightById(
+        @PathVariable String id,
+        @RequestParam String departureCode,
+        @RequestParam String arrivalCode,
+        @RequestParam(required = false) LocalDate departureDate,
+        @RequestParam Integer noAdults,
+        @RequestParam String currency,
+        @RequestParam(required = false) Boolean nonStops
+    ) {
+        return this.flightService.searchFlightById(
+            departureCode, 
+            arrivalCode, 
+            departureDate, 
+            noAdults, 
+            currency, 
+            nonStops != null ? nonStops : false,
+            id
+        );
+    }
     
 
     @GetMapping("/searchAirports")
