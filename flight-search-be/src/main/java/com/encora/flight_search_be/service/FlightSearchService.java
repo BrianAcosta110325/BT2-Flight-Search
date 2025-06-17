@@ -65,7 +65,7 @@ public class FlightSearchService implements FlightService {
         
                 FlightSearchResponseDto dto = new FlightSearchResponseDto();
 
-                dto.setId(response.getHeaders().getFirst("id"));
+                dto.setId(offer.path("id").asText());
         
                 // Airports
                 String rDepartureCode = firstSegment.path("departure").path("iataCode").asText();
