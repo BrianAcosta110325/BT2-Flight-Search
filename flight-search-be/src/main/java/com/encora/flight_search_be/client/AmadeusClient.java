@@ -27,9 +27,11 @@ public class AmadeusClient {
     @Value("${amadeus.api.client-secret}")
     private String clientSecret;
 
-    private final String tokenUrl = "https://test.api.amadeus.com/v1/security/oauth2/token";
-    private final String flightSearchUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    private final String airportSearchUrl = "https://test.api.amadeus.com/v1/reference-data/locations";
+    private final String baseUrl = "https://test.api.amadeus.com";
+    private final String tokenUrl = baseUrl + "/v1/security/oauth2/token";
+    private final String flightSearchUrl = baseUrl + "/v2/shopping/flight-offers";
+    private final String airportSearchUrl = baseUrl + "/v1/reference-data/locations";
+    private final String airlineSearchUrl = baseUrl + "/v1/reference-data/airlines?";
 
     public String getAccessToken() {
         if (accessToken == null || System.currentTimeMillis() > tokenExpiration) {
@@ -144,6 +146,36 @@ public class AmadeusClient {
                 List<Map<String, Object>> data = (List<Map<String, Object>>) responseBody.get("data");
                 if (!data.isEmpty()) {
                     return (String) data.get(0).get("name");
+                }
+            }
+        }
+
+        return "";
+    }
+
+    @Cacheable(value = "airlineByCode", key = "#code")
+    public String searchAirlineByCode(String code) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(getAccessToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String url = airlineSearchUrl + "airlineCodes=" + code;
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> response = restTemplate.exchange(
+            url,
+            HttpMethod.GET,
+            requestEntity,
+            Map.class
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> responseBody = response.getBody();
+            if (responseBody != null && responseBody.containsKey("data")) {
+                List<Map<String, Object>> data = (List<Map<String, Object>>) responseBody.get("data");
+                if (!data.isEmpty()) {
+                    return (String) data.get(0).get("businessName");
                 }
             }
         }

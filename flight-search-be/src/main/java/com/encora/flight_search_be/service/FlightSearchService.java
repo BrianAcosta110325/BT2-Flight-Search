@@ -66,13 +66,20 @@ public class FlightSearchService implements FlightService {
         }
 
 
-        List<FlightSearchResponseDto> result = new ArrayList<>();
+        List<FlightSearchResponseDto> result = new ArrayList<FlightSearchResponseDto>();
+
+        for (FlightSearchAmadeusResposeDto flight : flights) {
+            FlightSearchResponseDto dto = new FlightSearchResponseDto(flight, amadeusClient);
+            dto.setDepartureAirportName(amadeusClient.searchAirportByCode(dto.getDepartureAirportCode()));
+            dto.setArrivalAirportName(amadeusClient.searchAirportByCode(dto.getArrivalAirportCode()));
+            result.add(dto);
+        }
 
         return result;
     }
     
     // @Override
-    // public List<FlightSearchResponseDto> searchFlights(
+    // public List<FlightSearchResponseDto> searchFlights2(
     //     String departureCode,
     //     String arrivalCode,
     //     LocalDate departureDate,
