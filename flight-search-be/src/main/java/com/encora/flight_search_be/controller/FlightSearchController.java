@@ -45,26 +45,26 @@ public class FlightSearchController {
         );
     }
 
-    // @GetMapping("/searchFlightById/{id}")
-    // public FlightSearchDetailedResponseDto searchFlightById(
-    //     @PathVariable String id,
-    //     @RequestParam String departureCode,
-    //     @RequestParam String arrivalCode,
-    //     @RequestParam(required = false) LocalDate departureDate,
-    //     @RequestParam Integer noAdults,
-    //     @RequestParam String currency,
-    //     @RequestParam(required = false) Boolean nonStops
-    // ) {
-    //     return this.flightService.searchFlightById(
-    //         departureCode, 
-    //         arrivalCode, 
-    //         departureDate, 
-    //         noAdults, 
-    //         currency, 
-    //         nonStops != null ? nonStops : false,
-    //         id
-    //     );
-    // }
+    @GetMapping("/searchFlightById/{id}")
+    public FlightSearchDetailedResponseDto searchFlightById(
+        @PathVariable String id,
+        @RequestParam String departureCode,
+        @RequestParam String arrivalCode,
+        @RequestParam(required = false) LocalDate departureDate,
+        @RequestParam Integer noAdults,
+        @RequestParam String currency,
+        @RequestParam(required = false) Boolean nonStops
+    ) {
+        return this.flightService.searchFlightById(
+            departureCode, 
+            arrivalCode, 
+            departureDate, 
+            noAdults, 
+            currency, 
+            nonStops != null ? nonStops : false,
+            id
+        );
+    }
     
 
     @GetMapping("/searchAirports")

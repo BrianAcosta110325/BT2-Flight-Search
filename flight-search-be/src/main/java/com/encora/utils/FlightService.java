@@ -1,7 +1,6 @@
 package com.encora.utils;
 
 import java.util.List;
-import java.util.Map;
 import java.time.LocalDate;
 
 import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
@@ -21,13 +20,13 @@ public interface FlightService {
 
     String searchAirportByCode(String code);
 
-    // FlightSearchDetailedResponseDto searchFlightById(
-    //     String departureCode,
-    //     String arrivalCode,
-    //     LocalDate departureDate,
-    //     Integer noAdults,
-    //     String currency,
-    //     boolean nonStop,
-    //     String id
-    // );
+    FlightSearchDetailedResponseDto searchFlightById(
+        String departureCode,
+        String arrivalCode,
+        LocalDate departureDate,
+        Integer noAdults,
+        String currency,
+        boolean nonStop,
+        String id
+    );
 }

@@ -11,18 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import com.encora.flight_search_be.client.AmadeusClient;
-import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto.FlightSearchDetailedStopDto;
-import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto.FlightFareDetailsDto;
-import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto.AmenityDto;
-import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto.FeeDto;
-// import com.encora.flight_search_be.dto.FlightSearchAmadeusResposDto;
 import com.encora.flight_search_be.dto.FlightSearchAmadeusResposeDto;
 import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
-import com.encora.flight_search_be.dto.FlightSearchStopDto;
-import com.encora.utils.DurationUtils;
 import com.encora.utils.FlightService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,6 +65,50 @@ public class FlightSearchService implements FlightService {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public FlightSearchDetailedResponseDto searchFlightById(
+        String departureCode,
+        String arrivalCode,
+        LocalDate departureDate,
+        Integer noAdults,
+        String currency,
+        boolean nonStop,
+        String flightId
+    ) {
+        Map<String, String> params = new HashMap<>();
+        params.put("originLocationCode", departureCode);
+        params.put("destinationLocationCode", arrivalCode);
+        params.put("departureDate", departureDate.toString());
+        params.put("adults", String.valueOf(noAdults));
+        params.put("currencyCode", currency);
+        params.put("nonStop", String.valueOf(nonStop));
+        params.put("max", "10");
+
+        JsonNode data = amadeusClient.searchFlights(params);
+        ObjectMapper mapper = new ObjectMapper();
+        List<FlightSearchAmadeusResposeDto> flights = new ArrayList<>();
+
+        try {
+            flights = mapper.convertValue(
+                data,
+                new TypeReference<List<FlightSearchAmadeusResposeDto>>() {}
+            );
+
+            List<FlightSearchDetailedResponseDto> result = new ArrayList<FlightSearchDetailedResponseDto>();
+            for (FlightSearchAmadeusResposeDto flight : flights) {
+                if (flight.getId().equals(flightId)) {
+                    FlightSearchDetailedResponseDto dto = new FlightSearchDetailedResponseDto(flight, amadeusClient);
+                    result.add(dto);
+                    return dto;
+                }
+            }
+            return new FlightSearchDetailedResponseDto();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return new FlightSearchDetailedResponseDto();
         }
     }
 
