@@ -123,38 +123,37 @@ public class AmadeusClient {
         );
     }
 
-    @Cacheable(value = "airportByCode", key = "#code")
+    @Cacheable(value = "airportByCode", key = "#code", condition = "#code != null")
     public String searchAirportByCode(String code) {
+        if (code == null) return "";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String url = airportSearchUrl + "?subType=AIRPORT&keyword=" + code;
-
+        String url = airportSearchUrl + "?keyword=" + code + "&subType=AIRPORT,CITY&view=FULL";
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<Map> response = restTemplate.exchange(
+        ResponseEntity<JsonNode> response = restTemplate.exchange(
             url,
             HttpMethod.GET,
             requestEntity,
-            Map.class
+            JsonNode.class
         );
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            Map<String, Object> responseBody = response.getBody();
-            if (responseBody != null && responseBody.containsKey("data")) {
-                List<Map<String, Object>> data = (List<Map<String, Object>>) responseBody.get("data");
-                if (!data.isEmpty()) {
-                    return (String) data.get(0).get("name");
-                }
-            }
+        JsonNode data = response.getBody().path("data");
+        if (data.isArray() && data.size() > 0) {
+            return data.get(0).path("name").asText();
         }
 
         return "";
     }
 
-    @Cacheable(value = "airlineByCode", key = "#code")
+    @Cacheable(value = "airlineByCode", key = "#code", condition = "#code != null")
     public String searchAirlineByCode(String code) {
+        if (code == null || code.isEmpty()) {
+            return "";
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);

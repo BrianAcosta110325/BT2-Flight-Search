@@ -66,6 +66,7 @@ public class FlightSearchAmadeusResposeDto {
     @Setter
     public static class Operating {
         private String carrierCode;
+        private String carrierName;
     }
 
     @Getter
@@ -124,6 +125,7 @@ public class FlightSearchAmadeusResposeDto {
     public static class IncludedBags {
         private int weight;   
         private String weightUnit;
+        private Integer quantity;
     }
 
     @Getter
