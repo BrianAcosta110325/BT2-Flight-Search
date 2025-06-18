@@ -1,5 +1,6 @@
 package com.encora.flight_search_be.client;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class AmadeusClient {
@@ -51,7 +55,7 @@ public class AmadeusClient {
                 int expiresIn = (int) responseBody.get("expires_in");
                 tokenExpiration = System.currentTimeMillis() + (expiresIn * 1000L);
             } else {
-                throw new RuntimeException("Error al obtener token de Amadeus");
+                throw new RuntimeException("Error obtaining Amadeus token");
             }
         }
 
@@ -59,7 +63,7 @@ public class AmadeusClient {
     }
 
     @Cacheable(value = "flightSearch", key = "#params.toString()")
-    public ResponseEntity<String> searchFlights(Map<String, String> params) {
+    public JsonNode searchFlights(Map<String, String> params) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(getAccessToken());
 
@@ -67,38 +71,35 @@ public class AmadeusClient {
 
         StringBuilder urlBuilder = new StringBuilder(flightSearchUrl + "?");
         for (Map.Entry<String, String> entry : params.entrySet()) {
-            urlBuilder.append(entry.getKey()).append("=")
-                    .append(entry.getValue()).append("&");
+            urlBuilder.append(entry.getKey())
+                    .append("=")
+                    .append(entry.getValue())
+                    .append("&");
         }
 
-        String url = urlBuilder.toString();
-        
+        // Elimina el último '&' si está
+        String url = urlBuilder.substring(0, urlBuilder.length() - 1);
+
         try {
-            return restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    requestEntity,
-                    String.class
+            ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                requestEntity,
+                String.class
             );
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+            return root.path("data");
         } catch (HttpClientErrorException.TooManyRequests e) {
-            throw new RuntimeException("Error al buscar vuelos: " + e.getMessage(), e);
+            throw new RuntimeException("Error searching flights: " + e.getMessage(), e);
         } catch (HttpClientErrorException e) {
-            throw new RuntimeException("Error al consultar la API de Amadeus: " + e.getStatusCode());
+            throw new RuntimeException("Error calling Amadeus API: " + e.getStatusCode());
+        } catch (IOException e) {
+            throw new RuntimeException("Error parsing JSON response: " + e.getMessage(), e);
         }
     }
 
-    // public ResponseEntity<String> searchFlightById(String fligthId, Map<String, String> params) {
-    //     ResponseEntity<String> response = searchFlights(params);
-
-
-
-    //     return restTemplate.exchange(
-    //         url,
-    //         HttpMethod.GET,
-    //         requestEntity,
-    //         String.class
-    //     );
-    // }
 
     public ResponseEntity<String> searchAirports(String query) {
         HttpHeaders headers = new HttpHeaders();

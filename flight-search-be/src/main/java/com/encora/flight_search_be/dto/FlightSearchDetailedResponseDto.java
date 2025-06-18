@@ -30,7 +30,8 @@ public class FlightSearchDetailedResponseDto {
     // Segment details
     private String aircraftCode;
     private String cabin;       
-    private String fareClass;   
+    private String fareClass;
+    private List<FlightFareDetailsDto> fareDetails;
 
     // Amenity
     private List<AmenityDto> amenities;
@@ -40,7 +41,7 @@ public class FlightSearchDetailedResponseDto {
     private int includedCabinBags;
 
     // Stops
-    private List<FlightSearchStopDto> stops;
+    private List<FlightSearchDetailedStopDto> stops;
     private List<String> layoverDurations;
 
     // Price
@@ -49,47 +50,37 @@ public class FlightSearchDetailedResponseDto {
     private String pricePerTraveler;
     private List<FeeDto> fees;
 
+    @Getter
+    @Setter
+    public static class FlightFareDetailsDto {
+        private String segmentId;
+        private String cabin;
+        private String travelClass;
+        private Integer includedCheckedBags;
+        private Integer includedCabinBags;
+        private List<AmenityDto> amenities;
+    }
+
+    @Getter
+    @Setter
     public static class AmenityDto {
         private String description;
         private boolean isChargeable;
-
-        // Getters y setters
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
-
-        public boolean isChargeable() { return isChargeable; }
-        public void setChargeable(boolean chargeable) { isChargeable = chargeable; }
     }
 
+    @Getter
+    @Setter
     public static class FeeDto {
         private String type;
         private String amount;
-
-        // Getters y setters
-        public String getType() { return type; }
-        public void setType(String type) { this.type = type; }
-
-        public String getAmount() { return amount; }
-        public void setAmount(String amount) { this.amount = amount; }
     }
 
-    public static class FlightSearchStopDto {
+    @Getter
+    @Setter
+    public static class FlightSearchDetailedStopDto {
         private String airportCode;
         private String arrivalTime;
         private String departureTime;
         private String duration;
-
-        // Getters y setters
-        public String getAirportCode() { return airportCode; }
-        public void setAirportCode(String airportCode) { this.airportCode = airportCode; }
-
-        public String getArrivalTime() { return arrivalTime; }
-        public void setArrivalTime(String arrivalTime) { this.arrivalTime = arrivalTime; }
-
-        public String getDepartureTime() { return departureTime; }
-        public void setDepartureTime(String departureTime) { this.departureTime = departureTime; }
-
-        public String getDuration() { return duration; }
-        public void setDuration(String duration) { this.duration = duration; }
     }
 }

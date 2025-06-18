@@ -21,13 +21,13 @@ public interface FlightService {
 
     String searchAirportByCode(String code);
 
-    FlightSearchDetailedResponseDto searchFlightById(
-        String departureCode,
-        String arrivalCode,
-        LocalDate departureDate,
-        Integer noAdults,
-        String currency,
-        boolean nonStop,
-        String id
-    );
+    // FlightSearchDetailedResponseDto searchFlightById(
+    //     String departureCode,
+    //     String arrivalCode,
+    //     LocalDate departureDate,
+    //     Integer noAdults,
+    //     String currency,
+    //     boolean nonStop,
+    //     String id
+    // );
 }
