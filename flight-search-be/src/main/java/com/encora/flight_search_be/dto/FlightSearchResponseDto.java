@@ -3,6 +3,7 @@ package com.encora.flight_search_be.dto;
 import java.util.List;
 
 import com.encora.flight_search_be.client.AmadeusClient;
+import com.encora.utils.DurationUtils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +32,20 @@ public class FlightSearchResponseDto {
 
     private String totalPrice;
     private String pricePerTraveler;
+
+    @Getter
+    @Setter
+    public class FlightSearchStopDto {
+        private String airportName;
+        private String airportCode;
+        private String layoverDuration;
+
+        public FlightSearchStopDto(FlightSearchAmadeusResposeDto.Segment segment, AmadeusClient amadeusClient) {
+            this.airportName = amadeusClient.searchAirportByCode(segment.getArrival().getIataCode());
+            this.airportCode = segment.getArrival().getIataCode();
+            this.layoverDuration = DurationUtils.formatDuration(segment.getDuration());
+        }
+    }
 
     public FlightSearchResponseDto(FlightSearchAmadeusResposeDto flightSearchAmadeusResposeDto, AmadeusClient amadeusClient) {
         this.id = flightSearchAmadeusResposeDto.getId();
@@ -64,5 +79,12 @@ public class FlightSearchResponseDto {
                     .getOperating()
                     .toString();
         }
+
+        this.totalFlightDuration = DurationUtils.formatDuration(flightSearchAmadeusResposeDto.getItineraries().get(0).getDuration());
+        this.stops = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().stream()
+                .map(segment -> new FlightSearchStopDto(segment, amadeusClient))
+                .toList();
+        this.totalPrice = flightSearchAmadeusResposeDto.getPrice().getTotal();
+        this.pricePerTraveler = flightSearchAmadeusResposeDto.getTravelerPricings().get(0).getPrice().getTotal();
     }
 }
