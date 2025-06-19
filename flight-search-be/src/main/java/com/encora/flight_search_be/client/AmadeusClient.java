@@ -46,8 +46,6 @@ public class AmadeusClient {
     }    
 
     public String getAccessToken() {
-        System.out.println(clientSecret);
-        System.out.println(clientId);
         if (accessToken == null || System.currentTimeMillis() > tokenExpiration) {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
