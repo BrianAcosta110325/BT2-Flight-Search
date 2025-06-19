@@ -53,7 +53,7 @@ public class AmadeusClient {
                 int expiresIn = (int) responseBody.get("expires_in");
                 tokenExpiration = System.currentTimeMillis() + (expiresIn * 1000L);
             } else {
-                throw new RuntimeException("Error al obtener token de Amadeus");
+                throw new RuntimeException("Error obtaining Amadeus token");
             }
         }
 
