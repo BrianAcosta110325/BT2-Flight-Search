@@ -15,6 +15,8 @@ public class AmadeusClient {
     private String accessToken;
     private long tokenExpiration;
 
+    private final static String TOKEN_BODY = "grant_type=client_credentials&client_id={clientId}&client_secret={clientSecret}";
+
     @Value("${amadeus.api.client-id}")
     private String clientId;
 
@@ -46,31 +48,30 @@ public class AmadeusClient {
     }    
 
     public String getAccessToken() {
-        if (accessToken == null || System.currentTimeMillis() > tokenExpiration) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        if (accessToken!=null && System.currentTimeMillis() < tokenExpiration) {
+            return accessToken;
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            String body = "grant_type=client_credentials" +
-                    "&client_id=" + clientId +
-                    "&client_secret=" + clientSecret;
+        String body = getTockenBody();
 
-            HttpEntity<String> request = new HttpEntity<>(body, headers);
+        HttpEntity<String> request = new HttpEntity<>(body, headers);
 
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    tokenUrl,
-                    HttpMethod.POST,
-                    request,
-                    Map.class
-            );
+        ResponseEntity<Map> response = restTemplate.exchange(
+                tokenUrl,
+                HttpMethod.POST,
+                request,
+                Map.class
+        );
 
-            if (response.getStatusCode() == HttpStatus.OK) {
-                Map<String, Object> responseBody = response.getBody();
-                accessToken = (String) responseBody.get("access_token");
-                int expiresIn = (int) responseBody.get("expires_in");
-                tokenExpiration = System.currentTimeMillis() + (expiresIn * 1000L);
-            } else {
-                throw new RuntimeException("Error obtaining Amadeus token");
-            }
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> responseBody = response.getBody();
+            accessToken = (String) responseBody.get("access_token");
+            int expiresIn = (int) responseBody.get("expires_in");
+            tokenExpiration = System.currentTimeMillis() + (expiresIn * 1000L);
+        } else {
+            throw new RuntimeException("Error obtaining Amadeus token");
         }
 
         return accessToken;
@@ -112,5 +113,10 @@ public class AmadeusClient {
             requestEntity,
             String.class
         );
+    }
+
+    private String getTockenBody () {
+        return TOKEN_BODY.replace("{clientId}", clientId)
+        .replace("{clientSecret}", clientSecret);
     }
 }
