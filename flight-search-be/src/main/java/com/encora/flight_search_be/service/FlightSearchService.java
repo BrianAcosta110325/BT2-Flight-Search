@@ -25,20 +25,20 @@ public class FlightSearchService implements FlightService {
     
     @Override
     public List<FlightSearchResponseDto> searchFlights(
-        String departureCode,
-        String arrivalCode,
+        String originAirportCode,
+        String destinationAirportCode,
         LocalDate departureDate,
-        Integer noAdults,
-        String currency,
-        boolean nonStop
+        Integer numberOfAdults,
+        String currencyCode,
+        boolean onlyNonStopFlights
     ) {
         Map<String, String> params = new HashMap<>();
-        params.put("originLocationCode", departureCode);
-        params.put("destinationLocationCode", arrivalCode);
+        params.put("originLocationCode", originAirportCode);
+        params.put("destinationLocationCode", destinationAirportCode);
         params.put("departureDate", departureDate.toString());
-        params.put("adults", String.valueOf(noAdults));
-        params.put("currencyCode", currency);
-        params.put("nonStop", String.valueOf(nonStop));
+        params.put("adults", String.valueOf(numberOfAdults));
+        params.put("currencyCode", currencyCode);
+        params.put("nonStop", String.valueOf(onlyNonStopFlights));
         params.put("max", "10");
 
         ResponseEntity<String> response = amadeusClient.searchFlights(params);
@@ -64,8 +64,8 @@ public class FlightSearchService implements FlightService {
                 dto.setDuration(itinerary.path("duration").asText());
 
                 JsonNode price = offer.path("price");
-                dto.setPrice(price.path("total").asText() + " " + currency);
-                dto.setPricePerTraveler(price.path("total").asText() + " " + currency);
+                dto.setPrice(price.path("total").asText() + " " + currencyCode);
+                dto.setPricePerTraveler(price.path("total").asText() + " " + currencyCode);
                 dto.setNonStop(offer.path("numberOfBookableSeats").asInt() > 0 && itinerary.path("segments").size() == 1);
 
                 result.add(dto);

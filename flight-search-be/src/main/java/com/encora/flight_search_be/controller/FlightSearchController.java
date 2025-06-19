@@ -23,23 +23,23 @@ public class FlightSearchController {
     
     @GetMapping("/searchFlights")
     public List<FlightSearchResponseDto> searchFlights(
-        @RequestParam() String departureCode,
-        @RequestParam() String arrivalCode, 
+        @RequestParam("originAirportCode") String originAirportCode,
+        @RequestParam("destinationAirportCode") String destinationAirportCode, 
         @RequestParam(required = false) LocalDate departureDate,
-        @RequestParam() Integer noAdults,
-        @RequestParam() String currency,
-        @RequestParam(required = false) Boolean nonStops
+        @RequestParam("numberOfAdults") Integer numberOfAdults,
+        @RequestParam("currencyCode") String currencyCode,
+        @RequestParam(required = false) Boolean onlyNonStopFlights
     ) {
         if (departureDate == null) {
             departureDate = LocalDate.now();
         }
         return this.flightService.searchFlights(
-            departureCode, 
-            arrivalCode, 
+            originAirportCode, 
+            destinationAirportCode, 
             departureDate, 
-            noAdults, 
-            currency, 
-            nonStops != null ? nonStops : false
+            numberOfAdults, 
+            currencyCode, 
+            onlyNonStopFlights != null ? onlyNonStopFlights : false
         );
     }
 
