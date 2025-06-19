@@ -15,6 +15,9 @@ public class AmadeusClient {
     private String accessToken;
     private long tokenExpiration;
 
+    private final static String ACCESS_TOKEN = "access_token";
+    private final static String EXPIRES_IN = "expires_in";
+
     private final static String TOKEN_BODY = "grant_type=client_credentials&client_id={clientId}&client_secret={clientSecret}";
 
     @Value("${amadeus.api.client-id}")
@@ -67,8 +70,8 @@ public class AmadeusClient {
 
         if (response.getStatusCode() == HttpStatus.OK) {
             Map<String, Object> responseBody = response.getBody();
-            accessToken = (String) responseBody.get("access_token");
-            int expiresIn = (int) responseBody.get("expires_in");
+            accessToken = (String) responseBody.get(ACCESS_TOKEN);
+            int expiresIn = (int) responseBody.get(EXPIRES_IN);
             tokenExpiration = System.currentTimeMillis() + (expiresIn * 1000L);
         } else {
             throw new RuntimeException("Error obtaining Amadeus token");
