@@ -1,16 +1,10 @@
-import React, { SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import { QueryParams } from '../../Interfaces/QueryParams';
 import { SearcherDropdown } from './SearcherDropdown';
-import { Dropdown } from 'react-bootstrap';
 
 interface FilterProps {
   onApplyFilter: (filterData: QueryParams) => void;
 }
-
-// interface CheckboxOption {
-//   id: string;
-//   checked: boolean;
-// }
 
 function Filter({ onApplyFilter }: FilterProps) {
   const [searchText, setSearchText] = useState("");
