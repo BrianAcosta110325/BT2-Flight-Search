@@ -37,16 +37,14 @@ public class FlightSearchService implements FlightService {
             departureDate = LocalDate.now();
         }
 
-        Map<String, String> params = new HashMap<>();
-        params.put("originLocationCode", originAirportCode);
-        params.put("destinationLocationCode", destinationAirportCode);
-        params.put("departureDate", departureDate.toString());
-        params.put("adults", String.valueOf(numberOfAdults));
-        params.put("currencyCode", currencyCode);
-        params.put("nonStop", String.valueOf(onlyNonStopFlights));
-        params.put("max", "10");
-
-        ResponseEntity<String> response = amadeusClient.searchFlights(params);
+        ResponseEntity<String> response = amadeusClient.searchFlights(paramsMap(
+            originAirportCode,
+            destinationAirportCode,
+            departureDate,
+            numberOfAdults,
+            currencyCode,
+            onlyNonStopFlights
+        ));
 
         List<FlightSearchResponseDto> result = new ArrayList<>();
 
@@ -115,5 +113,23 @@ public class FlightSearchService implements FlightService {
         return result;
     }
 
-    
+    private Map<String, String> paramsMap(
+        String originAirportCode, 
+        String destinationAirportCode, 
+        LocalDate departureDate, 
+        Integer numberOfAdults,
+        String currencyCode,
+        Boolean onlyNonStopFlights
+        ){
+        Map<String, String> params = new HashMap<>();
+        params.put("originLocationCode", originAirportCode);
+        params.put("destinationLocationCode", destinationAirportCode);
+        params.put("departureDate", departureDate.toString());
+        params.put("adults", String.valueOf(numberOfAdults));
+        params.put("currencyCode", currencyCode);
+        params.put("nonStop", String.valueOf(onlyNonStopFlights));
+        params.put("max", "10");
+
+        return params;
+    }
 }
