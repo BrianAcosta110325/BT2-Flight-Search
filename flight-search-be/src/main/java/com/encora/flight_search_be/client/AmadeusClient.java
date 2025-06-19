@@ -20,8 +20,14 @@ public class AmadeusClient {
     @Value("${amadeus.api.client-secret}")
     private String clientSecret;
 
-    private final String tokenUrl = "https://test.api.amadeus.com/v1/security/oauth2/token";
-    private final String flightSearchUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
+    @Value("${amadeus.api.token-url}")
+    private String tokenUrl;
+
+    @Value("${amadeus.api.flight-search-url}")
+    private String flightSearchUrl;
+
+    @Value("${amadeus.api.search-airports-url}")
+    private String searchAriportsUrl;
 
     public String getAccessToken() {
         if (accessToken == null || System.currentTimeMillis() > tokenExpiration) {
@@ -81,7 +87,7 @@ public class AmadeusClient {
         headers.setBearerAuth(getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String url = "https://test.api.amadeus.com/v1/reference-data/locations"
+        String url = searchAriportsUrl
                 + "?keyword=" + query
                 + "&subType=AIRPORT"
                 + "&page[limit]=10";
