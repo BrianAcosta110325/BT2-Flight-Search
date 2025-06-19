@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class AmadeusClient {
     
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     private String accessToken;
     private long tokenExpiration;
 
@@ -34,6 +34,10 @@ public class AmadeusClient {
 
     @Value("${amadeus.api.search-airports-url}")
     private String searchAriportsUrl;
+
+    public AmadeusClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     private String buildUrlWithParams(String baseUrl, Map<String, String> params) {
         StringBuilder urlBuilder = new StringBuilder(baseUrl);
