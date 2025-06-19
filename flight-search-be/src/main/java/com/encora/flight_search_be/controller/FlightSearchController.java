@@ -23,16 +23,13 @@ public class FlightSearchController {
     
     @GetMapping("/searchFlights")
     public List<FlightSearchResponseDto> searchFlights(
-        @RequestParam("originAirportCode") String originAirportCode,
-        @RequestParam("destinationAirportCode") String destinationAirportCode, 
+        @RequestParam String originAirportCode,
+        @RequestParam String destinationAirportCode, 
         @RequestParam(required = false) LocalDate departureDate,
-        @RequestParam("numberOfAdults") Integer numberOfAdults,
-        @RequestParam("currencyCode") String currencyCode,
+        @RequestParam Integer numberOfAdults,
+        @RequestParam String currencyCode,
         @RequestParam(required = false) Boolean onlyNonStopFlights
     ) {
-        if (departureDate == null) {
-            departureDate = LocalDate.now();
-        }
         return this.flightService.searchFlights(
             originAirportCode, 
             destinationAirportCode, 
@@ -45,15 +42,6 @@ public class FlightSearchController {
 
     @GetMapping("/searchAirports")
     public List<String> searchAirports(@RequestParam() String query) {
-        // Normalize the query to handle accents and special characters
-        String normalizedQuery = query
-            .toLowerCase()
-            .replaceAll("[áàäâ]", "a")
-            .replaceAll("[éèëê]", "e")
-            .replaceAll("[íìïî]", "i")
-            .replaceAll("[óòöô]", "o")
-            .replaceAll("[úùüû]", "u")
-            .replaceAll("ñ", "n");
-        return this.flightService.searchAirports(normalizedQuery);
+        return this.flightService.searchAirports(query);
     }
 }

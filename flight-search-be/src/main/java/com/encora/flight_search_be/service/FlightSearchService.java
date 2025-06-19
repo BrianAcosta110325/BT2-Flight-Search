@@ -32,6 +32,9 @@ public class FlightSearchService implements FlightService {
         String currencyCode,
         boolean onlyNonStopFlights
     ) {
+        if (departureDate == null) {
+            departureDate = LocalDate.now();
+        }
         Map<String, String> params = new HashMap<>();
         params.put("originLocationCode", originAirportCode);
         params.put("destinationLocationCode", destinationAirportCode);
@@ -78,7 +81,17 @@ public class FlightSearchService implements FlightService {
     }
 
     @Override
-    public List<String> searchAirports(String query) {
+    public List<String> searchAirports(String unNormalizedQuery) {
+        // Normalize the query to handle accents and special characters
+        String query = unNormalizedQuery
+            .toLowerCase()
+            .replaceAll("[áàäâ]", "a")
+            .replaceAll("[éèëê]", "e")
+            .replaceAll("[íìïî]", "i")
+            .replaceAll("[óòöô]", "o")
+            .replaceAll("[úùüû]", "u")
+            .replaceAll("ñ", "n");
+
         ResponseEntity<String> response = amadeusClient.searchAirports(query);
 
         List<String> result = new ArrayList<>();
