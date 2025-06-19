@@ -81,8 +81,7 @@ public class AmadeusClient {
     }
 
     public ResponseEntity<String> searchFlights(Map<String, String> params) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(getAccessToken());
+        HttpHeaders headers = getHeaders();
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
@@ -97,8 +96,7 @@ public class AmadeusClient {
     }
 
     public ResponseEntity<String> searchAirports(String query) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(getAccessToken());
+        HttpHeaders headers = getHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, String> params = new HashMap<>();
@@ -121,5 +119,11 @@ public class AmadeusClient {
     private String getTockenBody () {
         return TOKEN_BODY.replace("{clientId}", clientId)
         .replace("{clientSecret}", clientSecret);
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(getAccessToken());
+        return headers;
     }
 }
