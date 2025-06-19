@@ -1,5 +1,6 @@
 package com.encora.flight_search_be.client;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value; 
@@ -29,7 +30,24 @@ public class AmadeusClient {
     @Value("${amadeus.api.search-airports-url}")
     private String searchAriportsUrl;
 
+    private String buildUrlWithParams(String baseUrl, Map<String, String> params) {
+        StringBuilder urlBuilder = new StringBuilder(baseUrl);
+        if (params != null && !params.isEmpty()) {
+            urlBuilder.append("?");
+            params.forEach((key, value) -> 
+                urlBuilder.append(key)
+                          .append("=")
+                          .append(value)
+                          .append("&")
+            );
+            urlBuilder.deleteCharAt(urlBuilder.length() - 1);
+        }
+        return urlBuilder.toString();
+    }    
+
     public String getAccessToken() {
+        System.out.println(clientSecret);
+        System.out.println(clientId);
         if (accessToken == null || System.currentTimeMillis() > tokenExpiration) {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -66,13 +84,7 @@ public class AmadeusClient {
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        StringBuilder urlBuilder = new StringBuilder(flightSearchUrl + "?");
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            urlBuilder.append(entry.getKey()).append("=")
-                    .append(entry.getValue()).append("&");
-        }
-
-        String url = urlBuilder.toString();
+        String url = buildUrlWithParams(flightSearchUrl, params);
 
         return restTemplate.exchange(
                 url,
@@ -87,10 +99,12 @@ public class AmadeusClient {
         headers.setBearerAuth(getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String url = searchAriportsUrl
-                + "?keyword=" + query
-                + "&subType=AIRPORT"
-                + "&page[limit]=10";
+        Map<String, String> params = new HashMap<>();
+        params.put("keyword", query);
+        params.put("subType", "AIRPORT");
+        params.put("page[limit]", "10");
+
+        String url = buildUrlWithParams(searchAriportsUrl, params);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
