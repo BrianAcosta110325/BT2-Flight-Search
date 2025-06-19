@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import com.encora.flight_search_be.client.AmadeusClient;
+import com.encora.flight_search_be.dto.AirportDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
 import com.encora.utils.FlightService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,6 +36,7 @@ public class FlightSearchService implements FlightService {
         if (departureDate == null) {
             departureDate = LocalDate.now();
         }
+
         Map<String, String> params = new HashMap<>();
         params.put("originLocationCode", originAirportCode);
         params.put("destinationLocationCode", destinationAirportCode);
@@ -81,8 +83,8 @@ public class FlightSearchService implements FlightService {
     }
 
     @Override
-    public List<String> searchAirports(String unNormalizedQuery) {
-        // Normalize the query to handle accents and special characters
+    public List<AirportDto> searchAirports(String unNormalizedQuery) {
+        // Normalize the query
         String query = unNormalizedQuery
             .toLowerCase()
             .replaceAll("[áàäâ]", "a")
@@ -94,7 +96,7 @@ public class FlightSearchService implements FlightService {
 
         ResponseEntity<String> response = amadeusClient.searchAirports(query);
 
-        List<String> result = new ArrayList<>();
+        List<AirportDto> result = new ArrayList<AirportDto>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -102,11 +104,14 @@ public class FlightSearchService implements FlightService {
             JsonNode data = root.path("data");
 
             for (JsonNode airport : data) {
-                result.add(airport.path("iataCode").asText() + " - " + airport.path("name").asText());
+                String iataCode = airport.path("iataCode").asText();
+                String name = airport.path("name").asText();
+                result.add(new AirportDto(iataCode, name));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return result;
     }
 }

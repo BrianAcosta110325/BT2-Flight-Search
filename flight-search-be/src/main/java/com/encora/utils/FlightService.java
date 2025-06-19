@@ -2,6 +2,8 @@ package com.encora.utils;
 
 import java.util.List;
 import java.time.LocalDate;
+
+import com.encora.flight_search_be.dto.AirportDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
 
 public interface FlightService {
@@ -14,5 +16,5 @@ public interface FlightService {
         boolean nonStop
     );
 
-    List<String> searchAirports(String query);
+    List<AirportDto> searchAirports(String query);
 }
