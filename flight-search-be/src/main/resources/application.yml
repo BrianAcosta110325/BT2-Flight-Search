@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: flight-search-be
+
+amadeus:
+  api:
+    client-id: ${AMADEUS_API_CLIENT_ID}
+    client-secret: ${AMADEUS_API_CLIENT_SECRET}
