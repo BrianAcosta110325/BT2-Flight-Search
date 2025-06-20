@@ -1,6 +1,6 @@
 import { QueryParams } from "../Interfaces/QueryParams"
 import { Flight } from "../Interfaces/Flight"
-import { Api } from "./API"
+import { Api } from "./Api"
 
 export const SearchFlightsService = {
     getFlights: async (params?: QueryParams) => {
@@ -13,5 +13,5 @@ export const SearchFlightsService = {
 
     getAirports: async (query: String) => {
         return Api.get(`searchAirports/${query}`)
-     }
- }
+    }
+}

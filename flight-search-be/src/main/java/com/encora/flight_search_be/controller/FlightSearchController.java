@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
-import com.encora.flight_search_be.dto.FlightSearchResponseDto;
+import com.encora.flight_search_be.dto.SearchFlightResponseDto;
 import com.encora.flight_search_be.service.FlightSearchService;
 
 @RestController
@@ -24,7 +24,8 @@ public class FlightSearchController {
     private FlightSearchService flightService;
     
     @GetMapping("/searchFlights")
-    public List<FlightSearchResponseDto> searchFlights(
+    public SearchFlightResponseDto searchFlights(
+        @RequestParam() String page,
         @RequestParam() String departureCode,
         @RequestParam() String arrivalCode, 
         @RequestParam(required = false) LocalDate departureDate,
@@ -36,6 +37,7 @@ public class FlightSearchController {
             departureDate = LocalDate.now();
         }
         return this.flightService.searchFlights(
+            page,
             departureCode, 
             arrivalCode, 
             departureDate, 
@@ -67,8 +69,8 @@ public class FlightSearchController {
     }
     
 
-    @GetMapping("/searchAirports")
-    public List<String> searchAirports(@RequestParam() String query) {
+    @GetMapping("/searchAirports/{query}")
+    public List<String> searchAirports(@PathVariable String query) {
         // Normalize the query to handle accents and special characters
         String normalizedQuery = query
             .toLowerCase()

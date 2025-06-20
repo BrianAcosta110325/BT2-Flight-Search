@@ -14,6 +14,7 @@ import com.encora.flight_search_be.client.AmadeusClient;
 import com.encora.flight_search_be.dto.FlightSearchAmadeusResposeDto;
 import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
+import com.encora.flight_search_be.dto.SearchFlightResponseDto;
 import com.encora.utils.FlightService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,7 +28,8 @@ public class FlightSearchService implements FlightService {
     private AmadeusClient amadeusClient;
 
     @Override
-    public List<FlightSearchResponseDto> searchFlights(
+    public SearchFlightResponseDto searchFlights(
+        String page,
         String originLocationCode,
         String destinationLocationCode,
         LocalDate departureDate,
@@ -35,6 +37,10 @@ public class FlightSearchService implements FlightService {
         String currencyCode,
         boolean nonStop
     ) {
+        int pageInt = Integer.parseInt(page);
+        int limit = 10;
+        int offset = (pageInt - 1) * limit;
+
         Map<String, String> params = new HashMap<>();
         params.put("originLocationCode", originLocationCode);
         params.put("destinationLocationCode", destinationLocationCode);
@@ -42,11 +48,11 @@ public class FlightSearchService implements FlightService {
         params.put("adults", String.valueOf(adults));
         params.put("currencyCode", currencyCode);
         params.put("nonStop", String.valueOf(nonStop));
-        params.put("max", "10");
+        params.put("max", "250");
 
         JsonNode data = amadeusClient.searchFlights(params);
         ObjectMapper mapper = new ObjectMapper();
-        List<FlightSearchAmadeusResposeDto> flights = new ArrayList<>();
+        List<FlightSearchAmadeusResposeDto> flights;
 
         try {
             flights = mapper.convertValue(
@@ -54,19 +60,27 @@ public class FlightSearchService implements FlightService {
                 new TypeReference<List<FlightSearchAmadeusResposeDto>>() {}
             );
 
-            List<FlightSearchResponseDto> result = new ArrayList<FlightSearchResponseDto>();
+            List<FlightSearchResponseDto> result = new ArrayList<>();
 
             for (FlightSearchAmadeusResposeDto flight : flights) {
                 FlightSearchResponseDto dto = new FlightSearchResponseDto(flight, amadeusClient);
                 result.add(dto);
             }
 
-            return result;
+            int fromIndex = Math.min(offset, result.size());
+            int toIndex = Math.min(offset + limit, result.size());
+            List<FlightSearchResponseDto> pageResults = result.subList(fromIndex, toIndex);
+
+            int totalPages = (int) Math.ceil((double) result.size() / limit);
+
+            return new SearchFlightResponseDto(pageResults, totalPages);
+
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            return new SearchFlightResponseDto(new ArrayList<>(), 0);
         }
     }
+
 
     @Override
     public FlightSearchDetailedResponseDto searchFlightById(

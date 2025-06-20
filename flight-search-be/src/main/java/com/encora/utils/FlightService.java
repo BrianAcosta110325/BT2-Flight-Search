@@ -4,10 +4,11 @@ import java.util.List;
 import java.time.LocalDate;
 
 import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
-import com.encora.flight_search_be.dto.FlightSearchResponseDto;
+import com.encora.flight_search_be.dto.SearchFlightResponseDto;
 
 public interface FlightService {
-    List<FlightSearchResponseDto> searchFlights(
+    SearchFlightResponseDto searchFlights(
+        String page,
         String departureCode,
         String arrivalCode,
         LocalDate departureDate,
