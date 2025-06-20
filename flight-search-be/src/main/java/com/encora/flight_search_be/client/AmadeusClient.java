@@ -79,9 +79,9 @@ public class AmadeusClient {
                     String.class
             );
         } catch (HttpClientErrorException.TooManyRequests e) {
-            throw new RuntimeException("Error al buscar vuelos: " + e.getMessage(), e);
+            throw new RuntimeException("Error searching for flights: " + e.getMessage(), e);
         } catch (HttpClientErrorException e) {
-            throw new RuntimeException("Error al consultar la API de Amadeus: " + e.getStatusCode());
+            throw new RuntimeException("Error calling Amadeus API: " + e.getStatusCode());
         }
     }
 
@@ -131,6 +131,6 @@ public class AmadeusClient {
             }
         }
 
-        throw new RuntimeException("No se encontró el aeropuerto con código: " + code);
+        throw new RuntimeException("Airport not found with code: " + code);
     }
 }
