@@ -1,6 +1,7 @@
 package com.encora.flight_search_be.client;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value; 
@@ -12,9 +13,14 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class AmadeusClient {
     
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     private String accessToken;
     private long tokenExpiration;
+
+    private final static String ACCESS_TOKEN = "access_token";
+    private final static String EXPIRES_IN = "expires_in";
+
+    private final static String TOKEN_BODY = "grant_type=client_credentials&client_id={clientId}&client_secret={clientSecret}";
 
     @Value("${amadeus.api.client-id}")
     private String clientId;
@@ -22,78 +28,89 @@ public class AmadeusClient {
     @Value("${amadeus.api.client-secret}")
     private String clientSecret;
 
-    private final String tokenUrl = "https://test.api.amadeus.com/v1/security/oauth2/token";
-    private final String flightSearchUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    private final String airportSearchUrl = "https://test.api.amadeus.com/v1/reference-data/locations";
+    @Value("${amadeus.api.token-url}")
+    private String tokenUrl;
+
+    @Value("${amadeus.api.flight-search-url}")
+    private String flightSearchUrl;
+
+    @Value("${amadeus.api.search-airports-url}")
+    private String searchAriportsUrl;
+
+    public AmadeusClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    private String buildUrlWithParams(String baseUrl, Map<String, String> params) {
+        StringBuilder urlBuilder = new StringBuilder(baseUrl);
+        if (params != null && !params.isEmpty()) {
+            urlBuilder.append("?");
+            params.forEach((key, value) -> 
+                urlBuilder.append(key)
+                          .append("=")
+                          .append(value)
+                          .append("&")
+            );
+            urlBuilder.deleteCharAt(urlBuilder.length() - 1);
+        }
+        return urlBuilder.toString();
+    }    
 
     public String getAccessToken() {
-        if (accessToken == null || System.currentTimeMillis() > tokenExpiration) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        if (accessToken!=null && System.currentTimeMillis() < tokenExpiration) {
+            return accessToken;
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            String body = "grant_type=client_credentials" +
-                    "&client_id=" + clientId +
-                    "&client_secret=" + clientSecret;
+        String body = getTockenBody();
 
-            HttpEntity<String> request = new HttpEntity<>(body, headers);
+        HttpEntity<String> request = new HttpEntity<>(body, headers);
 
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    tokenUrl,
-                    HttpMethod.POST,
-                    request,
-                    Map.class
-            );
+        ResponseEntity<Map> response = restTemplate.exchange(
+                tokenUrl,
+                HttpMethod.POST,
+                request,
+                Map.class
+        );
 
-            if (response.getStatusCode() == HttpStatus.OK) {
-                Map<String, Object> responseBody = response.getBody();
-                accessToken = (String) responseBody.get("access_token");
-                int expiresIn = (int) responseBody.get("expires_in");
-                tokenExpiration = System.currentTimeMillis() + (expiresIn * 1000L);
-            } else {
-                throw new RuntimeException("Error al obtener token de Amadeus");
-            }
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> responseBody = response.getBody();
+            accessToken = (String) responseBody.get(ACCESS_TOKEN);
+            int expiresIn = (int) responseBody.get(EXPIRES_IN);
+            tokenExpiration = System.currentTimeMillis() + (expiresIn * 1000L);
+        } else {
+            throw new RuntimeException("Error obtaining Amadeus token");
         }
 
         return accessToken;
     }
 
     public ResponseEntity<String> searchFlights(Map<String, String> params) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(getAccessToken());
+        HttpHeaders headers = getHeaders();
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        StringBuilder urlBuilder = new StringBuilder(flightSearchUrl + "?");
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            urlBuilder.append(entry.getKey()).append("=")
-                    .append(entry.getValue()).append("&");
-        }
+        String url = buildUrlWithParams(flightSearchUrl, params);
 
-        String url = urlBuilder.toString();
-        
-        try {
-            return restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    requestEntity,
-                    String.class
-            );
-        } catch (HttpClientErrorException.TooManyRequests e) {
-            throw new RuntimeException("Error searching for flights: " + e.getMessage(), e);
-        } catch (HttpClientErrorException e) {
-            throw new RuntimeException("Error calling Amadeus API: " + e.getStatusCode());
-        }
+        return restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                requestEntity,
+                String.class
+        );
     }
 
     public ResponseEntity<String> searchAirports(String query) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(getAccessToken());
+        HttpHeaders headers = getHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String url = airportSearchUrl
-                + "?keyword=" + query
-                + "&subType=AIRPORT"
-                + "&page[limit]=10";
+        Map<String, String> params = new HashMap<>();
+        params.put("keyword", query);
+        params.put("subType", "AIRPORT");
+        params.put("page[limit]", "10");
+
+        String url = buildUrlWithParams(searchAriportsUrl, params);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
@@ -132,5 +149,16 @@ public class AmadeusClient {
         }
 
         throw new RuntimeException("Airport not found with code: " + code);
+    }
+  
+    private String getTockenBody () {
+        return TOKEN_BODY.replace("{clientId}", clientId)
+        .replace("{clientSecret}", clientSecret);
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(getAccessToken());
+        return headers;
     }
 }

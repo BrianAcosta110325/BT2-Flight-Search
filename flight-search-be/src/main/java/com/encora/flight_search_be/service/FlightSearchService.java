@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import com.encora.flight_search_be.client.AmadeusClient;
+import com.encora.flight_search_be.dto.AirportDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
 import com.encora.flight_search_be.dto.FlightSearchStopDto;
 import com.encora.utils.DurationUtils;
@@ -27,23 +28,25 @@ public class FlightSearchService implements FlightService {
     
     @Override
     public List<FlightSearchResponseDto> searchFlights(
-        String departureCode,
-        String arrivalCode,
+        String originAirportCode,
+        String destinationAirportCode,
         LocalDate departureDate,
-        Integer noAdults,
-        String currency,
-        boolean nonStop
+        Integer numberOfAdults,
+        String currencyCode,
+        boolean onlyNonStopFlights
     ) {
-        Map<String, String> params = new HashMap<>();
-        params.put("originLocationCode", departureCode);
-        params.put("destinationLocationCode", arrivalCode);
-        params.put("departureDate", departureDate.toString());
-        params.put("adults", String.valueOf(noAdults));
-        params.put("currencyCode", currency);
-        params.put("nonStop", String.valueOf(nonStop));
-        params.put("max", "10");
+        if (departureDate == null) {
+            departureDate = LocalDate.now();
+        }
 
-        ResponseEntity<String> response = amadeusClient.searchFlights(params);
+        ResponseEntity<String> response = amadeusClient.searchFlights(paramsMap(
+            originAirportCode,
+            destinationAirportCode,
+            departureDate,
+            numberOfAdults,
+            currencyCode,
+            onlyNonStopFlights
+        ));
 
         List<FlightSearchResponseDto> result = new ArrayList<>();
 
@@ -115,7 +118,7 @@ public class FlightSearchService implements FlightService {
                 String total = price.path("total").asText() + " " + currency;
                 dto.setTotalPrice(total);
                 dto.setPricePerTraveler(total); // Asumimos precio por adulto ya que no se separa en JSON
-        
+
                 result.add(dto);
             }
         
@@ -127,10 +130,20 @@ public class FlightSearchService implements FlightService {
     }
 
     @Override
-    public List<String> searchAirports(String query) {
+    public List<AirportDto> searchAirports(String unNormalizedQuery) {
+        // Normalize the query
+        String query = unNormalizedQuery
+            .toLowerCase()
+            .replaceAll("[áàäâ]", "a")
+            .replaceAll("[éèëê]", "e")
+            .replaceAll("[íìïî]", "i")
+            .replaceAll("[óòöô]", "o")
+            .replaceAll("[úùüû]", "u")
+            .replaceAll("ñ", "n");
+
         ResponseEntity<String> response = amadeusClient.searchAirports(query);
 
-        List<String> result = new ArrayList<>();
+        List<AirportDto> result = new ArrayList<AirportDto>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -138,16 +151,39 @@ public class FlightSearchService implements FlightService {
             JsonNode data = root.path("data");
 
             for (JsonNode airport : data) {
-                result.add(airport.path("iataCode").asText() + " - " + airport.path("name").asText());
+                String iataCode = airport.path("iataCode").asText();
+                String name = airport.path("name").asText();
+                result.add(new AirportDto(iataCode, name));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return result;
     }
 
     @Override
     public String searchAirportByCode(String code) {
         return amadeusClient.searchAirportByCode(code);
+    }
+  
+    private Map<String, String> paramsMap(
+        String originAirportCode, 
+        String destinationAirportCode, 
+        LocalDate departureDate, 
+        Integer numberOfAdults,
+        String currencyCode,
+        Boolean onlyNonStopFlights
+        ){
+        Map<String, String> params = new HashMap<>();
+        params.put("originLocationCode", originAirportCode);
+        params.put("destinationLocationCode", destinationAirportCode);
+        params.put("departureDate", departureDate.toString());
+        params.put("adults", String.valueOf(numberOfAdults));
+        params.put("currencyCode", currencyCode);
+        params.put("nonStop", String.valueOf(onlyNonStopFlights));
+        params.put("max", "10");
+
+        return params;
     }
 }
