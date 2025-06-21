@@ -25,7 +25,7 @@ public class FlightSearchService implements FlightService {
     private static final Logger logger = LoggerFactory.getLogger(FlightSearchService.class);
 
     @Override
-    public List<FlightSearchResponseDto> searchFlights(
+    public SearchFlightResponseDto searchFlights(
         String page,
         String originAirportCode,
         String destinationAirportCode,
@@ -34,6 +34,10 @@ public class FlightSearchService implements FlightService {
         String currencyCode,
         Boolean onlyNonStopFlights
     ) {
+        int pageInt = Integer.parseInt(page);
+        int limit = 10;
+        int offset = (pageInt - 1) * limit;
+
         if (departureDate == null) {
             departureDate = LocalDate.now();
         }
@@ -50,47 +54,59 @@ public class FlightSearchService implements FlightService {
             onlyNonStopFlights
         ));
 
-        List<FlightSearchResponseDto> result = new ArrayList<>();
-
         try {
             ObjectMapper mapper = new ObjectMapper();
             List<FlightSearchAmadeusResposeDto> flights = mapper.convertValue(
                 data,
                 new TypeReference<List<FlightSearchAmadeusResposeDto>>() {}
             );
+
+            List<FlightSearchResponseDto> result = new ArrayList<FlightSearchResponseDto>();
 
             for (FlightSearchAmadeusResposeDto flight : flights) {
                 result.add(new FlightSearchResponseDto(flight, amadeusClient));
             }
 
+            int fromIndex = Math.min(offset, result.size());
+            int toIndex = Math.min(offset + limit, result.size());
+            List<FlightSearchResponseDto> pageResults = result.subList(fromIndex, toIndex);
+
+            int totalPages = (int) Math.ceil((double) result.size() / limit);
+
+            return new SearchFlightResponseDto(pageResults, totalPages);
+
         } catch (Exception e) {
             logger.error("Error parsing airport response", e);
         }
-
-        return result;
+        return null;
     }
+
 
     @Override
     public FlightSearchDetailedResponseDto searchFlightById(
-        String departureCode,
-        String arrivalCode,
+        String page,
+        String originAirportCode,
+        String destinationAirportCode,
         LocalDate departureDate,
-        Integer noAdults,
-        String currency,
-        boolean nonStop,
-        String flightId
+        Integer numberOfAdults,
+        String currencyCode,
+        Boolean onlyNonStopFlights,
+        String id
     ) {
-        Map<String, String> params = paramsMap(
-            "1",
-            departureCode,
-            arrivalCode,
-            departureDate,
-            noAdults,
-            currency,
-            nonStop
-        );
+        if (departureDate == null) {
+            departureDate = LocalDate.now();
+        }
+        onlyNonStopFlights = onlyNonStopFlights != null ? onlyNonStopFlights : false;
 
-        JsonNode data = amadeusClient.searchFlights(params);
+        JsonNode data = amadeusClient.searchFlights(paramsMap(
+            page,
+            originAirportCode,
+            destinationAirportCode,
+            departureDate,
+            numberOfAdults,
+            currencyCode,
+            onlyNonStopFlights
+        ));
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -100,7 +116,7 @@ public class FlightSearchService implements FlightService {
             );
 
             for (FlightSearchAmadeusResposeDto flight : flights) {
-                if (flight.getId().equals(flightId)) {
+                if (flight.getId().equals(id)) {
                     return new FlightSearchDetailedResponseDto(flight, amadeusClient);
                 }
             }
@@ -148,6 +164,11 @@ public class FlightSearchService implements FlightService {
         return amadeusClient.searchAirportByCode(code);
     }
 
+    @Override
+    public String searchAirlineByCode(String code) {
+        return amadeusClient.searchAirlineByCode(code);
+    }
+
     private Map<String, String> paramsMap(
         String page,
         String originAirportCode,
@@ -164,9 +185,7 @@ public class FlightSearchService implements FlightService {
         params.put("departureDate", departureDate.toString());
         params.put("adults", String.valueOf(numberOfAdults));
         params.put("currencyCode", currencyCode);
-        if (onlyNonStopFlights != null) {
-            params.put("nonStop", String.valueOf(onlyNonStopFlights));
-        }
+        params.put("nonStop", String.valueOf(onlyNonStopFlights));
         params.put("max", "10");
         return params;
     }

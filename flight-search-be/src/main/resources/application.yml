@@ -10,3 +10,4 @@ amadeus:
     token-url: https://test.api.amadeus.com/v1/security/oauth2/token
     flight-search-url: https://test.api.amadeus.com/v2/shopping/flight-offers
     search-airports-url: https://test.api.amadeus.com/v1/reference-data/locations
+    search-airlines-url: https://test.api.amadeus.com/v1/reference-data/airlines?

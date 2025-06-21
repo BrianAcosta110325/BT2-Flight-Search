@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
 import com.encora.flight_search_be.dto.AirportDto;
-import com.encora.flight_search_be.dto.FlightSearchResponseDto;
+import com.encora.flight_search_be.dto.SearchFlightResponseDto;
 import com.encora.flight_search_be.service.FlightSearchService;
 
 @RestController
@@ -25,7 +25,7 @@ public class FlightSearchController {
     private FlightSearchService flightService;
     
     @GetMapping("/searchFlights")
-    public List<FlightSearchResponseDto> searchFlights(
+    public SearchFlightResponseDto searchFlights(
         @RequestParam String page,
         @RequestParam String originAirportCode,
         @RequestParam String destinationAirportCode, 
@@ -48,31 +48,38 @@ public class FlightSearchController {
     @GetMapping("/searchFlightById/{id}")
     public FlightSearchDetailedResponseDto searchFlightById(
         @PathVariable String id,
-        @RequestParam String departureCode,
-        @RequestParam String arrivalCode,
+        @RequestParam String page,
+        @RequestParam String originAirportCode,
+        @RequestParam String destinationAirportCode,
         @RequestParam(required = false) LocalDate departureDate,
-        @RequestParam Integer noAdults,
-        @RequestParam String currency,
-        @RequestParam(required = false) Boolean nonStops
+        @RequestParam Integer numberOfAdults,
+        @RequestParam String currencyCode,
+        @RequestParam(required = false) Boolean onlyNonStopFlights
     ) {
         return this.flightService.searchFlightById(
-            departureCode, 
-            arrivalCode, 
+            page,
+            originAirportCode, 
+            destinationAirportCode, 
             departureDate, 
-            noAdults, 
-            currency, 
-            nonStops != null ? nonStops : false,
+            numberOfAdults, 
+            currencyCode, 
+            onlyNonStopFlights,
             id
         );
     }
 
     @GetMapping("/searchAirports/{query}")
-    public List<AirportDto> searchAirports(@RequestParam() String query) {
+    public List<AirportDto> searchAirports(@PathVariable() String query) {
         return this.flightService.searchAirports(query);
     }
 
-    @GetMapping("/searchAirportByCode")
-    public String searchAirportByCode(@RequestParam() String code) {
+    @GetMapping("/searchAirportByCode/{code}")
+    public String searchAirportByCode(@PathVariable() String code) {
         return this.flightService.searchAirportByCode(code);
+    }
+
+    @GetMapping("/searchAirlineByCode/{code}")
+    public String searchAirlineByCode(@PathVariable String code) {
+        return this.flightService.searchAirlineByCode(code);
     }
 }

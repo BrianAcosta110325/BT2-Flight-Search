@@ -131,7 +131,7 @@ public class AmadeusClient {
         }
     }
 
-
+    @Cacheable(value = "airportByQuery", key = "#query", condition = "#query != null")
     public ResponseEntity<String> searchAirports(String query) {
         HttpHeaders headers = getHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -207,7 +207,7 @@ public class AmadeusClient {
         if (responseBody != null && responseBody.containsKey("data")) {
             List<Map<String, Object>> data = (List<Map<String, Object>>) responseBody.get("data");
             if (!data.isEmpty()) {
-                return (String) data.get(0).get("name");
+                return (String) data.get(0).get("businessName");
             }
         }
         return "";
