@@ -9,6 +9,8 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.encora.flight_search_be.client.AmadeusClient;
 import com.encora.flight_search_be.dto.AirportDto;
@@ -25,6 +27,8 @@ public class FlightSearchService implements FlightService {
 
     @Autowired
     private AmadeusClient amadeusClient;
+
+    private static final Logger logger = LoggerFactory.getLogger(FlightSearchService.class);
     
     @Override
     public List<FlightSearchResponseDto> searchFlights(
@@ -123,8 +127,8 @@ public class FlightSearchService implements FlightService {
             }
         
         } catch (Exception e) {
-            e.printStackTrace();
-        }        
+            logger.error("Error parsing airport response", e);
+        }
 
         return result;
     }
@@ -156,8 +160,9 @@ public class FlightSearchService implements FlightService {
                 result.add(new AirportDto(iataCode, name));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error parsing airport response", e);
         }
+
 
         return result;
     }
