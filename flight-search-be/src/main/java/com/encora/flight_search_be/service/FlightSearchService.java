@@ -40,7 +40,7 @@ public class FlightSearchService implements FlightService {
 
         onlyNonStopFlights = onlyNonStopFlights != null ? onlyNonStopFlights : false;
 
-        ResponseEntity<String> response = amadeusClient.searchFlights(paramsMap(
+        JsonNode data = amadeusClient.searchFlights(paramsMap(
             page,
             originAirportCode,
             destinationAirportCode,
@@ -54,9 +54,6 @@ public class FlightSearchService implements FlightService {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(response.getBody());
-            JsonNode data = root.path("data");
-
             List<FlightSearchAmadeusResposeDto> flights = mapper.convertValue(
                 data,
                 new TypeReference<List<FlightSearchAmadeusResposeDto>>() {}

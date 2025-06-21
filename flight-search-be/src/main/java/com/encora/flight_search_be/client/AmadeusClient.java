@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -113,6 +114,11 @@ public class AmadeusClient {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                requestEntity,
+                String.class
+            );
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response.getBody());
             return root.path("data");
@@ -123,7 +129,6 @@ public class AmadeusClient {
         } catch (IOException e) {
             throw new RuntimeException("Error parsing JSON response: " + e.getMessage(), e);
         }
-        );
     }
 
 
@@ -156,7 +161,7 @@ public class AmadeusClient {
         headers.setBearerAuth(getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String url = airportSearchUrl + "?keyword=" + code + "&subType=AIRPORT,CITY&view=FULL";
+        String url = searchAriportsUrl + "?keyword=" + code + "&subType=AIRPORT,CITY&view=FULL";
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
         ResponseEntity<JsonNode> response = restTemplate.exchange(
