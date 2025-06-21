@@ -2,12 +2,16 @@ package com.encora.flight_search_be.dto;
 
 import java.util.List;
 
+import com.encora.flight_search_be.client.AmadeusClient;
+import com.encora.utils.DurationUtils;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class FlightSearchResponseDto {
+    private String id;
     private String departureAirportName;
     private String departureAirportCode;
     private String arrivalAirportName;
@@ -28,4 +32,59 @@ public class FlightSearchResponseDto {
 
     private String totalPrice;
     private String pricePerTraveler;
+
+    @Getter
+    @Setter
+    public class FlightSearchStopDto {
+        private String airportName;
+        private String airportCode;
+        private String layoverDuration;
+
+        public FlightSearchStopDto(FlightSearchAmadeusResposeDto.Segment segment, AmadeusClient amadeusClient) {
+            this.airportName = amadeusClient.searchAirportByCode(segment.getArrival().getIataCode());
+            this.airportCode = segment.getArrival().getIataCode();
+            this.layoverDuration = DurationUtils.formatDuration(segment.getDuration());
+        }
+    }
+
+    public FlightSearchResponseDto(FlightSearchAmadeusResposeDto flightSearchAmadeusResposeDto, AmadeusClient amadeusClient) {
+        this.id = flightSearchAmadeusResposeDto.getId();
+        this.departureAirportName = amadeusClient.searchAirportByCode(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getDeparture().getIataCode());
+        this.departureAirportCode = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getDeparture().getIataCode();
+        this.arrivalAirportName = amadeusClient.searchAirportByCode(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().size() - 1).getArrival().getIataCode());
+        this.arrivalAirportCode = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().size() - 1).getArrival().getIataCode();
+
+        this.departureDateTime = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getDeparture().getAt();
+        this.arrivalDateTime = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().size() - 1).getArrival().getAt();
+
+        this.airlineName = amadeusClient.searchAirlineByCode(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getCarrierCode());
+        this.airlineCode = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getCarrierCode();
+
+        this.operatingAirlineName = amadeusClient.searchAirlineByCode(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getOperating().getCarrierCode());
+        this.operatingAirlineCode = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getOperating().getCarrierCode();
+
+        if (flightSearchAmadeusResposeDto.getItineraries().size() > 1) {
+            this.operatingAirlineName = flightSearchAmadeusResposeDto.getItineraries().stream()
+                    .map(itinerary -> itinerary.getSegments())
+                    .flatMap(List::stream)
+                    .findFirst()
+                    .orElse(null)
+                    .getOperating()
+                    .toString();
+            this.operatingAirlineCode = flightSearchAmadeusResposeDto.getItineraries().stream()
+                    .map(itinerary -> itinerary.getSegments())
+                    .flatMap(List::stream)
+                    .findFirst()
+                    .orElse(null)
+                    .getOperating()
+                    .toString();
+        }
+
+        this.totalFlightDuration = DurationUtils.formatDuration(flightSearchAmadeusResposeDto.getItineraries().get(0).getDuration());
+        this.stops = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().stream()
+                .map(segment -> new FlightSearchStopDto(segment, amadeusClient))
+                .toList();
+        this.totalPrice = flightSearchAmadeusResposeDto.getPrice().getTotal();
+        this.pricePerTraveler = flightSearchAmadeusResposeDto.getTravelerPricings().get(0).getPrice().getTotal();
+    }
 }

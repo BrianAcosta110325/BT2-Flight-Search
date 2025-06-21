@@ -24,7 +24,12 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation ("com.fasterxml.jackson.core:jackson-databind")
-	implementation ("org.springframework.boot:spring-boot-starter-json")
+  implementation ("org.springframework.boot:spring-boot-starter-json")
+	implementation ("org.springframework.boot:spring-boot-starter-cache")
+	compileOnly("org.projectlombok:lombok:1.18.38")
+	annotationProcessor("org.projectlombok:lombok:1.18.38")
+	testCompileOnly("org.projectlombok:lombok:1.18.38")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
