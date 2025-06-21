@@ -141,16 +141,17 @@ public class AmadeusClient {
             Map.class
         );
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            Map<String, Object> responseBody = response.getBody();
-            if (responseBody != null && responseBody.containsKey("data")) {
-                List<Map<String, Object>> data = (List<Map<String, Object>>) responseBody.get("data");
-                if (!data.isEmpty()) {
-                    return (String) data.get(0).get("name");
-                }
-            }
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Airport not found with code: " + code);
         }
 
+        Map<String, Object> responseBody = response.getBody();
+        if (responseBody != null && responseBody.containsKey("data")) {
+            List<Map<String, Object>> data = (List<Map<String, Object>>) responseBody.get("data");
+            if (!data.isEmpty()) {
+                return (String) data.get(0).get("name");
+            }
+        }
         throw new RuntimeException("Airport not found with code: " + code);
     }
   
