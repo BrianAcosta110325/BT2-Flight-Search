@@ -115,7 +115,7 @@ public class FlightSearchService implements FlightService {
         
                 // Price
                 JsonNode price = offer.path("price");
-                String total = price.path("total").asText() + " " + currency;
+                String total = price.path("total").asText() + " " + currencyCode;
                 dto.setTotalPrice(total);
                 dto.setPricePerTraveler(total); // Asumimos precio por adulto ya que no se separa en JSON
 

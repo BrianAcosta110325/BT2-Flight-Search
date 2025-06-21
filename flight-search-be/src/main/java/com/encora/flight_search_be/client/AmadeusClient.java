@@ -37,6 +37,9 @@ public class AmadeusClient {
     @Value("${amadeus.api.search-airports-url}")
     private String searchAriportsUrl;
 
+    @Value("${amadeus.api.search-airports-by-code-url}")
+    private String airportSearchUrl;
+
     public AmadeusClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
