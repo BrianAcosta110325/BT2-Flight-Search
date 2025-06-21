@@ -1,5 +1,6 @@
 package com.encora.flight_search_be.client;
 
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -120,6 +121,37 @@ public class AmadeusClient {
         );
     }
 
+    public String searchAirportByCode(String code) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(getAccessToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String url = searchAriportsUrl + "?subType=AIRPORT&keyword=" + code;
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> response = restTemplate.exchange(
+            url,
+            HttpMethod.GET,
+            requestEntity,
+            Map.class
+        );
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Airport not found with code: " + code);
+        }
+
+        Map<String, Object> responseBody = response.getBody();
+        if (responseBody != null && responseBody.containsKey("data")) {
+            List<Map<String, Object>> data = (List<Map<String, Object>>) responseBody.get("data");
+            if (!data.isEmpty()) {
+                return (String) data.get(0).get("name");
+            }
+        }
+        return "";
+    }
+
+  
     private String getTockenBody () {
         return TOKEN_BODY.replace("{clientId}", clientId)
         .replace("{clientSecret}", clientSecret);

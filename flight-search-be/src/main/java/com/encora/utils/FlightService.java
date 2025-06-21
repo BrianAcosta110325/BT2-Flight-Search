@@ -8,13 +8,16 @@ import com.encora.flight_search_be.dto.FlightSearchResponseDto;
 
 public interface FlightService {
     List<FlightSearchResponseDto> searchFlights(
+        String page,
         String departureCode,
         String arrivalCode,
         LocalDate departureDate,
         Integer noAdults,
         String currency,
-        boolean nonStop
+        Boolean nonStop
     );
 
     List<AirportDto> searchAirports(String query);
+
+    String searchAirportByCode(String code);
 }

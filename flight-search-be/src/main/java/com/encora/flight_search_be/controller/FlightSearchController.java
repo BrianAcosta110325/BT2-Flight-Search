@@ -24,6 +24,7 @@ public class FlightSearchController {
     
     @GetMapping("/searchFlights")
     public List<FlightSearchResponseDto> searchFlights(
+        @RequestParam String page,
         @RequestParam String originAirportCode,
         @RequestParam String destinationAirportCode, 
         @RequestParam(required = false) LocalDate departureDate,
@@ -32,6 +33,7 @@ public class FlightSearchController {
         @RequestParam(required = false) Boolean onlyNonStopFlights
     ) {
         return this.flightService.searchFlights(
+            page,
             originAirportCode, 
             destinationAirportCode, 
             departureDate, 
@@ -41,8 +43,13 @@ public class FlightSearchController {
         );
     }
 
-    @GetMapping("/searchAirports")
+    @GetMapping("/searchAirports/{query}")
     public List<AirportDto> searchAirports(@RequestParam() String query) {
         return this.flightService.searchAirports(query);
+    }
+
+    @GetMapping("/searchAirportByCode")
+    public String searchAirportByCode(@RequestParam() String code) {
+        return this.flightService.searchAirportByCode(code);
     }
 }
