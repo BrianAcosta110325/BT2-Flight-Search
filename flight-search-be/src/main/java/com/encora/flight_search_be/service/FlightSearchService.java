@@ -32,6 +32,7 @@ public class FlightSearchService implements FlightService {
     
     @Override
     public List<FlightSearchResponseDto> searchFlights(
+        String page,
         String originAirportCode,
         String destinationAirportCode,
         LocalDate departureDate,
@@ -44,6 +45,7 @@ public class FlightSearchService implements FlightService {
         }
 
         ResponseEntity<String> response = amadeusClient.searchFlights(paramsMap(
+            page,
             originAirportCode,
             destinationAirportCode,
             departureDate,
@@ -173,20 +175,24 @@ public class FlightSearchService implements FlightService {
     }
   
     private Map<String, String> paramsMap(
+        String page,
         String originAirportCode, 
         String destinationAirportCode, 
         LocalDate departureDate, 
         Integer numberOfAdults,
         String currencyCode,
         Boolean onlyNonStopFlights
-        ){
+    ) {
         Map<String, String> params = new HashMap<>();
+        params.put("page", page);
         params.put("originLocationCode", originAirportCode);
         params.put("destinationLocationCode", destinationAirportCode);
         params.put("departureDate", departureDate.toString());
         params.put("adults", String.valueOf(numberOfAdults));
         params.put("currencyCode", currencyCode);
-        params.put("nonStop", String.valueOf(onlyNonStopFlights));
+        if (onlyNonStopFlights != null) {
+            params.put("nonStop", String.valueOf(onlyNonStopFlights));
+        }
         params.put("max", "10");
 
         return params;

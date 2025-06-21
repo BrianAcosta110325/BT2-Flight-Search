@@ -1,5 +1,8 @@
 package com.encora.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class DurationUtils {
 
     /**
@@ -12,31 +15,17 @@ public class DurationUtils {
             return "";
         }
 
+        Pattern pattern = Pattern.compile("P(?:(\\d+)D)?(?:T(?:(\\h+)H)?(?:(\\m+)M)?)?");
+        Matcher matcher = pattern.matcher(isoDuration);
+
         int days = 0, hours = 0, minutes = 0;
 
-        String duration = isoDuration.substring(1);
-
-        if (duration.contains("D")) {
-            String[] parts = duration.split("D");
-            days = Integer.parseInt(parts[0]);
-            duration = parts[1]; 
+        if (matcher.matches()) {
+            if (matcher.group(1) != null) days = Integer.parseInt(matcher.group(1));
+            if (matcher.group(2) != null) hours = Integer.parseInt(matcher.group(2));
+            if (matcher.group(3) != null) minutes = Integer.parseInt(matcher.group(3));
         }
 
-        if (duration.startsWith("T")) {
-            duration = duration.substring(1);
-        }
-
-        if (duration.contains("H")) {
-            int indexH = duration.indexOf("H");
-            hours = Integer.parseInt(duration.substring(0, indexH));
-            duration = duration.substring(indexH + 1);
-        }
-
-        if (duration.contains("M")) {
-            int indexM = duration.indexOf("M");
-            minutes = Integer.parseInt(duration.substring(0, indexM));
-        }
-        
         StringBuilder sb = new StringBuilder();
         if (days > 0) sb.append(days).append("d ");
         if (hours > 0) sb.append(hours).append("h ");
