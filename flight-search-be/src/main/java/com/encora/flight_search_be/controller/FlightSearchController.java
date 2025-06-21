@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
+import com.encora.flight_search_be.dto.AirportDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
 import com.encora.flight_search_be.service.FlightSearchService;
 
@@ -25,23 +26,22 @@ public class FlightSearchController {
     
     @GetMapping("/searchFlights")
     public List<FlightSearchResponseDto> searchFlights(
-        @RequestParam() String departureCode,
-        @RequestParam() String arrivalCode, 
+        @RequestParam String page,
+        @RequestParam String originAirportCode,
+        @RequestParam String destinationAirportCode, 
         @RequestParam(required = false) LocalDate departureDate,
-        @RequestParam() Integer noAdults,
-        @RequestParam() String currency,
-        @RequestParam(required = false) Boolean nonStops
+        @RequestParam Integer numberOfAdults,
+        @RequestParam String currencyCode,
+        @RequestParam(required = false) Boolean onlyNonStopFlights
     ) {
-        if (departureDate == null) {
-            departureDate = LocalDate.now();
-        }
         return this.flightService.searchFlights(
-            departureCode, 
-            arrivalCode, 
+            page,
+            originAirportCode, 
+            destinationAirportCode, 
             departureDate, 
-            noAdults, 
-            currency, 
-            nonStops != null ? nonStops : false
+            numberOfAdults, 
+            currencyCode, 
+            onlyNonStopFlights
         );
     }
 
@@ -65,20 +65,10 @@ public class FlightSearchController {
             id
         );
     }
-    
 
-    @GetMapping("/searchAirports")
-    public List<String> searchAirports(@RequestParam() String query) {
-        // Normalize the query to handle accents and special characters
-        String normalizedQuery = query
-            .toLowerCase()
-            .replaceAll("[áàäâ]", "a")
-            .replaceAll("[éèëê]", "e")
-            .replaceAll("[íìïî]", "i")
-            .replaceAll("[óòöô]", "o")
-            .replaceAll("[úùüû]", "u")
-            .replaceAll("ñ", "n");
-        return this.flightService.searchAirports(normalizedQuery);
+    @GetMapping("/searchAirports/{query}")
+    public List<AirportDto> searchAirports(@RequestParam() String query) {
+        return this.flightService.searchAirports(query);
     }
 
     @GetMapping("/searchAirportByCode")
