@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import { QueryParams } from '../../Interfaces/QueryParams';
 import { SearcherDropdown } from './SearcherDropdown';
 
@@ -7,51 +7,35 @@ interface FilterProps {
 }
 
 function Filter({ onApplyFilter }: FilterProps) {
-  const [searchText, setSearchText] = useState("");
+  const [query, setQuery] = useState<QueryParams>({
+    page: 1,
+    departureCode: '',
+    arrivalCode: '',
+    currency: 'USD',
+    nonStops: false,
+  });
 
-  const [currency, setCurrency] = useState([
-    { id: 'USD' },
-    { id: 'MXN' },
-    { id: 'EUR'},
-  ]);
+  const handleAirportSearch = (code: string) => {
+    setQuery(prev => ({ ...prev, departureCode: code }));
 
-  const [stops, setStops] = useState([
-    { id: 'Done', checked: false },
-    { id: 'Undone', checked: false },
-  ]);
+    // Puedes aplicar filtro directamente:
+    const updatedQuery: QueryParams = {
+      ...query,
+      departureCode: code,
+    };
 
-  // const updatePriorities = (updatedPriorities: CheckboxOption[]) => {
-  //   setPriorities(updatedPriorities);
-  // };
-
-  // const updateStatus = (updatedStatus: CheckboxOption[]) => {
-  //   setStatus(updatedStatus);
-  // };
-
-  // const applyFilter = () => {
-  //   const completed = status[0].checked === status[1].checked ? null : status[0].checked;
-  //   const prioritiesChecked: string[] = priorities.filter(option => option.checked).map(option => option.id);
-
-  //   const queryParams: QueryParams = {
-  //     text: searchText,
-  //   };
-
-  //   if (completed != null) queryParams.completed = completed.toString();
-  //   if (prioritiesChecked.length > 0) queryParams.priorities = prioritiesChecked.join(',');
-
-  //   onApplyFilter(queryParams);
-  // };
+    onApplyFilter(updatedQuery);
+  };
 
   return (
     <div className="container mt-4">
-      {/* Filter */}
       <div className="card p-3 mb-4">
         <div className="g-3 align-items-center">
-          <SearcherDropdown />
+          <SearcherDropdown onSearch={handleAirportSearch} />
         </div>
       </div>
     </div>
   );
 }
 
-export default Filter
+export default Filter;

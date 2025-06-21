@@ -4,7 +4,7 @@ import Filter from '../Filter/Filter';
 import './App.css';
 import { Flight } from '../../Interfaces/Flight';
 import React from 'react';
-import { SearchFlightsService } from '../../Services/FlightSearchApi';
+import { SearchFlightsService } from '../../Services/FlightSearchService';
 
 function App() {
   // Flights
