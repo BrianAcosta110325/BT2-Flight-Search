@@ -22,7 +22,6 @@ export const Api = {
     const data = await response.json();
   
     if (!response.ok) {
-      // Lanza un error con el mensaje que devuelve el backend o uno genérico
       throw new Error(data.message || 'Something went wrong');
     }
   
@@ -38,7 +37,6 @@ export const Api = {
 
     const data = await response.json();
     if (!response.ok) {
-      // Lanza un error con el mensaje que devuelve el backend o uno genérico
       throw new Error(data.message || 'Something went wrong');
     }
     
@@ -50,5 +48,5 @@ export const Api = {
       method: 'DELETE',
     });
     return response;
-   },
- };
+  },
+};
