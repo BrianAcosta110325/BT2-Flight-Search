@@ -7,7 +7,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value; 
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -36,9 +35,6 @@ public class AmadeusClient {
 
     @Value("${amadeus.api.search-airports-url}")
     private String searchAriportsUrl;
-
-    @Value("${amadeus.api.search-airports-by-code-url}")
-    private String airportSearchUrl;
 
     public AmadeusClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -130,7 +126,7 @@ public class AmadeusClient {
         headers.setBearerAuth(getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String url = airportSearchUrl + "?subType=AIRPORT&keyword=" + code;
+        String url = searchAriportsUrl + "?subType=AIRPORT&keyword=" + code;
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
@@ -152,8 +148,9 @@ public class AmadeusClient {
                 return (String) data.get(0).get("name");
             }
         }
-        throw new RuntimeException("Airport not found with code: " + code);
+        return "";
     }
+
   
     private String getTockenBody () {
         return TOKEN_BODY.replace("{clientId}", clientId)

@@ -15,7 +15,7 @@ public class DurationUtils {
             return "";
         }
 
-        Pattern pattern = Pattern.compile("P(?:(\\d+)D)?(?:T(?:(\\h+)H)?(?:(\\m+)M)?)?");
+        Pattern pattern = Pattern.compile("P(?:(\\d+)D)?(?:T(?:(\\d+)H)?(?:(\\d+)M)?)?");
         Matcher matcher = pattern.matcher(isoDuration);
 
         int days = 0, hours = 0, minutes = 0;

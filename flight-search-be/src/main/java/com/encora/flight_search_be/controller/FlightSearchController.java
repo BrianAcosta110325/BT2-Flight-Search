@@ -43,7 +43,7 @@ public class FlightSearchController {
         );
     }
 
-    @GetMapping("/searchAirports")
+    @GetMapping("/searchAirports/{query}")
     public List<AirportDto> searchAirports(@RequestParam() String query) {
         return this.flightService.searchAirports(query);
     }

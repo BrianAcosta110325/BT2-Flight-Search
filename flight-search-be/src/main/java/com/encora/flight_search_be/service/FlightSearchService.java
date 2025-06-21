@@ -38,11 +38,13 @@ public class FlightSearchService implements FlightService {
         LocalDate departureDate,
         Integer numberOfAdults,
         String currencyCode,
-        boolean onlyNonStopFlights
+        Boolean onlyNonStopFlights
     ) {
         if (departureDate == null) {
             departureDate = LocalDate.now();
         }
+
+        onlyNonStopFlights = onlyNonStopFlights != null ? onlyNonStopFlights : false;
 
         ResponseEntity<String> response = amadeusClient.searchFlights(paramsMap(
             page,
@@ -184,7 +186,7 @@ public class FlightSearchService implements FlightService {
         Boolean onlyNonStopFlights
     ) {
         Map<String, String> params = new HashMap<>();
-        params.put("page", page);
+        // params.put("page", page);
         params.put("originLocationCode", originAirportCode);
         params.put("destinationLocationCode", destinationAirportCode);
         params.put("departureDate", departureDate.toString());
