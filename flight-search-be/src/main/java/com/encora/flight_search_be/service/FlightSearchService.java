@@ -1,25 +1,20 @@
 package com.encora.flight_search_be.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.encora.flight_search_be.client.AmadeusClient;
-import com.encora.flight_search_be.dto.FlightSearchAmadeusResposeDto;
-import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
-import com.encora.flight_search_be.dto.FlightSearchResponseDto;
-import com.encora.flight_search_be.dto.SearchFlightResponseDto;
+import com.encora.flight_search_be.dto.*;
 import com.encora.utils.FlightService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 @Service
 public class FlightSearchService implements FlightService {
@@ -27,44 +22,49 @@ public class FlightSearchService implements FlightService {
     @Autowired
     private AmadeusClient amadeusClient;
 
+    private static final Logger logger = LoggerFactory.getLogger(FlightSearchService.class);
+
     @Override
     public SearchFlightResponseDto searchFlights(
         String page,
-        String originLocationCode,
-        String destinationLocationCode,
+        String originAirportCode,
+        String destinationAirportCode,
         LocalDate departureDate,
-        Integer adults,
+        Integer numberOfAdults,
         String currencyCode,
-        boolean nonStop
+        Boolean onlyNonStopFlights
     ) {
         int pageInt = Integer.parseInt(page);
         int limit = 10;
         int offset = (pageInt - 1) * limit;
 
-        Map<String, String> params = new HashMap<>();
-        params.put("originLocationCode", originLocationCode);
-        params.put("destinationLocationCode", destinationLocationCode);
-        params.put("departureDate", departureDate.toString());
-        params.put("adults", String.valueOf(adults));
-        params.put("currencyCode", currencyCode);
-        params.put("nonStop", String.valueOf(nonStop));
-        params.put("max", "250");
+        if (departureDate == null) {
+            departureDate = LocalDate.now();
+        }
 
-        JsonNode data = amadeusClient.searchFlights(params);
-        ObjectMapper mapper = new ObjectMapper();
-        List<FlightSearchAmadeusResposeDto> flights;
+        onlyNonStopFlights = onlyNonStopFlights != null ? onlyNonStopFlights : false;
+
+        JsonNode data = amadeusClient.searchFlights(paramsMap(
+            page,
+            originAirportCode,
+            destinationAirportCode,
+            departureDate,
+            numberOfAdults,
+            currencyCode,
+            onlyNonStopFlights
+        ));
 
         try {
-            flights = mapper.convertValue(
+            ObjectMapper mapper = new ObjectMapper();
+            List<FlightSearchAmadeusResposeDto> flights = mapper.convertValue(
                 data,
                 new TypeReference<List<FlightSearchAmadeusResposeDto>>() {}
             );
 
-            List<FlightSearchResponseDto> result = new ArrayList<>();
+            List<FlightSearchResponseDto> result = new ArrayList<FlightSearchResponseDto>();
 
             for (FlightSearchAmadeusResposeDto flight : flights) {
-                FlightSearchResponseDto dto = new FlightSearchResponseDto(flight, amadeusClient);
-                result.add(dto);
+                result.add(new FlightSearchResponseDto(flight, amadeusClient));
             }
 
             int fromIndex = Math.min(offset, result.size());
@@ -75,62 +75,72 @@ public class FlightSearchService implements FlightService {
 
             return new SearchFlightResponseDto(pageResults, totalPages);
 
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return new SearchFlightResponseDto(new ArrayList<>(), 0);
+        } catch (Exception e) {
+            logger.error("Error parsing airport response", e);
         }
+        return null;
     }
 
 
     @Override
     public FlightSearchDetailedResponseDto searchFlightById(
-        String departureCode,
-        String arrivalCode,
+        String page,
+        String originAirportCode,
+        String destinationAirportCode,
         LocalDate departureDate,
-        Integer noAdults,
-        String currency,
-        boolean nonStop,
-        String flightId
+        Integer numberOfAdults,
+        String currencyCode,
+        Boolean onlyNonStopFlights,
+        String id
     ) {
-        Map<String, String> params = new HashMap<>();
-        params.put("originLocationCode", departureCode);
-        params.put("destinationLocationCode", arrivalCode);
-        params.put("departureDate", departureDate.toString());
-        params.put("adults", String.valueOf(noAdults));
-        params.put("currencyCode", currency);
-        params.put("nonStop", String.valueOf(nonStop));
-        params.put("max", "10");
+        if (departureDate == null) {
+            departureDate = LocalDate.now();
+        }
+        onlyNonStopFlights = onlyNonStopFlights != null ? onlyNonStopFlights : false;
 
-        JsonNode data = amadeusClient.searchFlights(params);
-        ObjectMapper mapper = new ObjectMapper();
-        List<FlightSearchAmadeusResposeDto> flights = new ArrayList<>();
+        JsonNode data = amadeusClient.searchFlights(paramsMap(
+            page,
+            originAirportCode,
+            destinationAirportCode,
+            departureDate,
+            numberOfAdults,
+            currencyCode,
+            onlyNonStopFlights
+        ));
 
         try {
-            flights = mapper.convertValue(
+            ObjectMapper mapper = new ObjectMapper();
+            List<FlightSearchAmadeusResposeDto> flights = mapper.convertValue(
                 data,
                 new TypeReference<List<FlightSearchAmadeusResposeDto>>() {}
             );
 
-            List<FlightSearchDetailedResponseDto> result = new ArrayList<FlightSearchDetailedResponseDto>();
             for (FlightSearchAmadeusResposeDto flight : flights) {
-                if (flight.getId().equals(flightId)) {
-                    FlightSearchDetailedResponseDto dto = new FlightSearchDetailedResponseDto(flight, amadeusClient);
-                    result.add(dto);
-                    return dto;
+                if (flight.getId().equals(id)) {
+                    return new FlightSearchDetailedResponseDto(flight, amadeusClient);
                 }
             }
-            return new FlightSearchDetailedResponseDto();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return new FlightSearchDetailedResponseDto();
+
+        } catch (Exception e) {
+            logger.error("Error parsing flight by ID", e);
         }
+
+        return new FlightSearchDetailedResponseDto();
     }
 
     @Override
-    public List<String> searchAirports(String query) {
-        ResponseEntity<String> response = amadeusClient.searchAirports(query);
+    public List<AirportDto> searchAirports(String unNormalizedQuery) {
+        String query = unNormalizedQuery
+            .toLowerCase()
+            .replaceAll("[áàäâ]", "a")
+            .replaceAll("[éèëê]", "e")
+            .replaceAll("[íìïî]", "i")
+            .replaceAll("[óòöô]", "o")
+            .replaceAll("[úùüû]", "u")
+            .replaceAll("ñ", "n");
 
-        List<String> result = new ArrayList<>();
+        ResponseEntity<String> response = amadeusClient.searchAirports(query);
+        List<AirportDto> result = new ArrayList<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -138,16 +148,45 @@ public class FlightSearchService implements FlightService {
             JsonNode data = root.path("data");
 
             for (JsonNode airport : data) {
-                result.add(airport.path("iataCode").asText() + " - " + airport.path("name").asText());
+                String iataCode = airport.path("iataCode").asText();
+                String name = airport.path("name").asText();
+                result.add(new AirportDto(iataCode, name));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error parsing airport response", e);
         }
+
         return result;
     }
 
     @Override
     public String searchAirportByCode(String code) {
         return amadeusClient.searchAirportByCode(code);
+    }
+
+    @Override
+    public String searchAirlineByCode(String code) {
+        return amadeusClient.searchAirlineByCode(code);
+    }
+
+    private Map<String, String> paramsMap(
+        String page,
+        String originAirportCode,
+        String destinationAirportCode,
+        LocalDate departureDate,
+        Integer numberOfAdults,
+        String currencyCode,
+        Boolean onlyNonStopFlights
+    ) {
+        Map<String, String> params = new HashMap<>();
+        // params.put("page", page); // Usar si implementas paginación manual
+        params.put("originLocationCode", originAirportCode);
+        params.put("destinationLocationCode", destinationAirportCode);
+        params.put("departureDate", departureDate.toString());
+        params.put("adults", String.valueOf(numberOfAdults));
+        params.put("currencyCode", currencyCode);
+        params.put("nonStop", String.valueOf(onlyNonStopFlights));
+        params.put("max", "10");
+        return params;
     }
 }

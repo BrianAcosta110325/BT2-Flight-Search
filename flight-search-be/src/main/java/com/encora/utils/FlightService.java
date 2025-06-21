@@ -4,30 +4,34 @@ import java.util.List;
 import java.time.LocalDate;
 
 import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
+import com.encora.flight_search_be.dto.AirportDto;
 import com.encora.flight_search_be.dto.SearchFlightResponseDto;
 
 public interface FlightService {
     SearchFlightResponseDto searchFlights(
         String page,
-        String departureCode,
-        String arrivalCode,
+        String originAirportCode,
+        String destinationAirportCode,
         LocalDate departureDate,
-        Integer noAdults,
-        String currency,
-        boolean nonStop
+        Integer numberOfAdults,
+        String currencyCode,
+        Boolean onlyNonStopFlights
     );
 
-    List<String> searchAirports(String query);
+    List<AirportDto> searchAirports(String query);
 
     String searchAirportByCode(String code);
 
+    String searchAirlineByCode(String code);
+
     FlightSearchDetailedResponseDto searchFlightById(
-        String departureCode,
-        String arrivalCode,
+        String page,
+        String originAirportCode,
+        String destinationAirportCode,
         LocalDate departureDate,
-        Integer noAdults,
-        String currency,
-        boolean nonStop,
+        Integer numberOfAdults,
+        String currencyCode,
+        Boolean onlyNonStopFlights,
         String id
     );
 }

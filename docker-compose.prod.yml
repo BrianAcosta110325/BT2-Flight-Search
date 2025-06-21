@@ -3,6 +3,9 @@ services:
     build: ./flight-search-be
     ports:
       - "8080:8080"
+    environment:
+      - AMADEUS_API_CLIENT_ID=${AMADEUS_API_CLIENT_ID}
+      - AMADEUS_API_CLIENT_SECRET=${AMADEUS_API_CLIENT_SECRET}
   frontend:
     build: ./flight-search-fe
     ports:
