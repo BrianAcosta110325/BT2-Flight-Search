@@ -42,6 +42,7 @@ public class FlightSearchService implements FlightService {
             departureDate = LocalDate.now();
         }
 
+        numberOfAdults = numberOfAdults != null ? numberOfAdults : 1;
         onlyNonStopFlights = onlyNonStopFlights != null ? onlyNonStopFlights : false;
 
         JsonNode data = amadeusClient.searchFlights(paramsMap(
@@ -64,6 +65,12 @@ public class FlightSearchService implements FlightService {
             List<FlightSearchResponseDto> result = new ArrayList<FlightSearchResponseDto>();
 
             for (FlightSearchAmadeusResposeDto flight : flights) {
+                if(flight.getDepartureCode() == null || !flight.getDepartureCode().equals(originAirportCode)) {
+                    continue;
+                }
+                if(flight.getArrivalCode() == null || !flight.getArrivalCode().equals(destinationAirportCode)) {
+                    continue;
+                }
                 result.add(new FlightSearchResponseDto(flight, amadeusClient));
             }
 

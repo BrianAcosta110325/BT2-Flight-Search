@@ -1,73 +1,41 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { QueryParams } from '../../Interfaces/QueryParams';
 import Filter from '../Filter/Filter';
 import './App.css';
 import { Flight } from '../../Interfaces/Flight';
-import React from 'react';
 import { SearchFlightsService } from '../../Services/FlightSearchService';
 
 function App() {
-  // Flights
   const [flights, setFlights] = useState<Flight[]>([]);
-  // Pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  // FilterParams
   const [filter, setFilter] = useState<QueryParams>({} as QueryParams);
+  const [loading, setLoading] = useState(false);
 
-  // Loading state
-  const [loading, setLoading] = useState(true);
-
-  const applyFilter = React.useCallback(() => {
+  const applyFilter = useCallback((newFilter: QueryParams) => {
     setLoading(true);
+    setFilter(newFilter); // en caso de que quieras almacenarlo
 
     const queryParams: QueryParams = {
+      ...newFilter,
       page: page,
-      departureCode: '',
-      arrivalCode: '',
-      departureDate: undefined,
-      noAdults: undefined,
-      currency: 'USD',
-      nonStops: false,
     };
-    
-    if (filter.departureCode) {
-      queryParams.departureCode = filter.departureCode;
-    }
-    if (filter.arrivalCode) {
-      queryParams.arrivalCode = filter.arrivalCode;
-    }
-    if (filter.departureDate) {
-      queryParams.departureDate = filter.departureDate;
-    }
-    if (filter.noAdults) {
-      queryParams.noAdults = filter.noAdults;
-    }
-    if (filter.currency) {
-      queryParams.currency = filter.currency;
-    }
-    if (filter.nonStops !== undefined) {
-      queryParams.nonStops = filter.nonStops;
-    }
 
     SearchFlightsService.getFlights(queryParams).then((data) => {
       setFlights(data.flights);
       setTotalPages(data.totalPages);
       setLoading(false);
+      console.log('Flights fetched:', data.flights);
+    }).catch(err => {
+      console.error('Error fetching flights:', err);
+      setLoading(false);
     });
-  }, [page, filter]);
+  }, [page]);
 
   return (
     <div className="App">
-      <Filter
-        onApplyFilter={(params) => {
-          setFilter((prev) => prev
-            ? { ...prev, ...params }
-            : { ...params } as QueryParams
-          );
-        }}
-      />
+      <Filter onApplyFilter={applyFilter} />
+      {/* Puedes mostrar los vuelos aquí */}
     </div>
   );
 }

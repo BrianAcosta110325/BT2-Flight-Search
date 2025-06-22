@@ -143,4 +143,13 @@ public class FlightSearchAmadeusResposeDto {
     public static class AmenityProvider {
         private String name;
     }
+
+    // Quick access methods for departure and arrival codes
+    public String getDepartureCode() {
+        return this.itineraries.get(0).getSegments().get(0).getDeparture().getIataCode();
+    }
+
+    public String getArrivalCode() {
+        return this.itineraries.get(0).getSegments().get(this.itineraries.get(0).getSegments().size() - 1).getArrival().getIataCode();
+    }
 }
