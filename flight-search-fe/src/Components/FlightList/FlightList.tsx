@@ -1,10 +1,12 @@
 import { Flight } from '../../Interfaces/Flight';
 import { useNavigate } from 'react-router-dom';
 import './FlightList.css';
+import { QueryParams } from '../../Interfaces/QueryParams';
 
 interface FlightListProps {
   flights: Flight[];
   loading: boolean;
+  params?: QueryParams;
 }
 
 function formatDateTime(datetime: string): string {

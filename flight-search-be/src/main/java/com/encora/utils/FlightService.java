@@ -25,13 +25,6 @@ public interface FlightService {
     String searchAirlineByCode(String code);
 
     FlightSearchDetailedResponseDto searchFlightById(
-        String page,
-        String originAirportCode,
-        String destinationAirportCode,
-        LocalDate departureDate,
-        Integer numberOfAdults,
-        String currencyCode,
-        Boolean onlyNonStopFlights,
         String id
     );
 }

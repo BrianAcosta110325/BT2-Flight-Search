@@ -163,7 +163,7 @@ public class FlightSearchDetailedResponseDto {
             .toList();
         this.basePrice = flightSearchAmadeusResposeDto.getPrice().getBase();
         this.totalPrice = flightSearchAmadeusResposeDto.getPrice().getTotal();
-        // this.pricePerTraveler = flightSearchAmadeusResposeDto.getItineraries().get(0).getPrice().getPerAdult();
+        this.pricePerTraveler = flightSearchAmadeusResposeDto.getTravelerPricings().get(0).getPrice().getTotal();
         this.fees = flightSearchAmadeusResposeDto.getPrice().getFees().stream()
             .map(fee -> {
                 FeeDto feeDto = new FeeDto(fee);

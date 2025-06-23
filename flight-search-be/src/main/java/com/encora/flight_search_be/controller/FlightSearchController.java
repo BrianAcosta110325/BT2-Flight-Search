@@ -47,23 +47,9 @@ public class FlightSearchController {
 
     @GetMapping("/searchFlightById/{id}")
     public FlightSearchDetailedResponseDto searchFlightById(
-        @PathVariable String id,
-        @RequestParam String page,
-        @RequestParam String departureCode,
-        @RequestParam String arrivalCode,
-        @RequestParam(required = false) LocalDate departureDate,
-        @RequestParam(required = false) Integer numberOfAdults,
-        @RequestParam String currency,
-        @RequestParam(required = false) Boolean nonStops
+        @PathVariable String id
     ) {
         return this.flightService.searchFlightById(
-            page,
-            departureCode, 
-            arrivalCode, 
-            departureDate, 
-            numberOfAdults, 
-            currency, 
-            nonStops,
             id
         );
     }

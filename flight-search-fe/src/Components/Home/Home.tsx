@@ -34,7 +34,7 @@ function Home() {
   }, [page]);
 
   return (
-    <div className="App">
+    <div className="Home">
       <Filter onApplyFilter={applyFilter} />
       <FlightList flights={flights} loading={loading} />
     </div>

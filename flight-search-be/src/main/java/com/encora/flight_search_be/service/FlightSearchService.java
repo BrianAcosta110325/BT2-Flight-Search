@@ -24,6 +24,8 @@ public class FlightSearchService implements FlightService {
 
     private static final Logger logger = LoggerFactory.getLogger(FlightSearchService.class);
 
+    private static Map<String, String> lastQuery = new HashMap<>();
+
     @Override
     public SearchFlightResponseDto searchFlights(
         String page,
@@ -45,9 +47,7 @@ public class FlightSearchService implements FlightService {
         numberOfAdults = numberOfAdults != null ? numberOfAdults : 1;
         onlyNonStopFlights = onlyNonStopFlights != null ? onlyNonStopFlights : false;
 
-        System.out.println(paramsMap(page, originAirportCode, destinationAirportCode, departureDate, numberOfAdults, currencyCode, onlyNonStopFlights));
-
-        JsonNode data = amadeusClient.searchFlights(paramsMap(
+        Map<String, String> params = paramsMap(
             page,
             originAirportCode,
             destinationAirportCode,
@@ -55,7 +55,9 @@ public class FlightSearchService implements FlightService {
             numberOfAdults,
             currencyCode,
             onlyNonStopFlights
-        ));
+        );
+
+        JsonNode data = amadeusClient.searchFlights(params);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -82,6 +84,8 @@ public class FlightSearchService implements FlightService {
 
             int totalPages = (int) Math.ceil((double) result.size() / limit);
 
+            lastQuery = params;
+
             return new SearchFlightResponseDto(pageResults, totalPages);
 
         } catch (Exception e) {
@@ -93,29 +97,9 @@ public class FlightSearchService implements FlightService {
 
     @Override
     public FlightSearchDetailedResponseDto searchFlightById(
-        String page,
-        String originAirportCode,
-        String destinationAirportCode,
-        LocalDate departureDate,
-        Integer numberOfAdults,
-        String currencyCode,
-        Boolean onlyNonStopFlights,
         String id
     ) {
-        if (departureDate == null) {
-            departureDate = LocalDate.now();
-        }
-        onlyNonStopFlights = onlyNonStopFlights != null ? onlyNonStopFlights : false;
-
-        JsonNode data = amadeusClient.searchFlights(paramsMap(
-            page,
-            originAirportCode,
-            destinationAirportCode,
-            departureDate,
-            numberOfAdults,
-            currencyCode,
-            onlyNonStopFlights
-        ));
+        JsonNode data = amadeusClient.searchFlights(lastQuery);
 
         try {
             ObjectMapper mapper = new ObjectMapper();

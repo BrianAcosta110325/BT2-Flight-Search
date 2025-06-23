@@ -103,8 +103,6 @@ public class AmadeusClient {
 
         String url = buildUrlWithParams(flightSearchUrl, params);
 
-        System.out.println("Request URL: " + url);
-
         try {
             ResponseEntity<String> response = restTemplate.exchange(
                 url,
@@ -118,7 +116,6 @@ public class AmadeusClient {
         } catch (HttpClientErrorException.TooManyRequests e) {
             throw new RuntimeException("Error searching flights: " + e.getMessage(), e);
         } catch (HttpClientErrorException e) {
-            System.out.println("Response body: " + e.getResponseBodyAsString());
             throw new RuntimeException("Error calling Amadeus API: " + e.getStatusCode());
         } catch (IOException e) {
             throw new RuntimeException("Error parsing JSON response: " + e.getMessage(), e);
