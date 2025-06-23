@@ -15,7 +15,8 @@ public interface FlightService {
         LocalDate departureDate,
         Integer numberOfAdults,
         String currencyCode,
-        Boolean onlyNonStopFlights
+        Boolean onlyNonStopFlights,
+        Sorter sortBy
     );
 
     List<AirportDto> searchAirports(String query);

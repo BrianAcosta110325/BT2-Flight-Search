@@ -1,12 +1,13 @@
 import { Flight } from '../../Interfaces/Flight';
 import { useNavigate } from 'react-router-dom';
 import './FlightList.css';
-import { QueryParams } from '../../Interfaces/QueryParams';
+import { useState } from 'react';
+import { Sorter } from '../../Interfaces/Sorter';
 
 interface FlightListProps {
   flights: Flight[];
   loading: boolean;
-  params?: QueryParams;
+  onChangeSorter: (sortBy: Sorter) => void;
 }
 
 function formatDateTime(datetime: string): string {
@@ -14,12 +15,31 @@ function formatDateTime(datetime: string): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function FlightList({ flights, loading }: FlightListProps) {
+const sortOptions = [
+  { value: Sorter.BasePrice, label: 'Base Price' },
+  { value: Sorter.TotalPrice, label: 'Total Price' },
+  { value: Sorter.Fees, label: 'Fees' },
+  { value: Sorter.PricePerTraveler, label: 'Price Per Traveler' },
+];
+
+function FlightList({ flights, loading, onChangeSorter }: FlightListProps) {
   const navigate = useNavigate();
+  const [sortBy, setSortBy] = useState<string>('totalPrice');
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    onChangeSorter(value as Sorter);
+  };
 
   const handleClick = (flightId: string) => {
     navigate(`/flight-details/${flightId}`);
   };
+
+  const sortedFlights = [...flights].sort((a, b) => {
+    const aValue = parseFloat((a as any)[sortBy]);
+    const bValue = parseFloat((b as any)[sortBy]);
+    return aValue - bValue;
+  });
 
   if (loading) {
     return <p className="text-center mt-4">Loading flights...</p>;
@@ -31,7 +51,21 @@ function FlightList({ flights, loading }: FlightListProps) {
 
   return (
     <div className="container mt-4">
-      {flights.map((flight, index) => (
+      <div className="d-flex justify-content-end align-items-center mb-3">
+        <span className="me-2">Sort by</span>
+        <select
+          className="form-select w-auto"
+          value={sortBy}
+          onChange={e => handleSortChange(e.target.value)}
+        >
+          {sortOptions.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      {sortedFlights.map((flight, index) => (
         <div
           key={index}
           className="card card-flight-list mb-3 p-3 shadow-sm"

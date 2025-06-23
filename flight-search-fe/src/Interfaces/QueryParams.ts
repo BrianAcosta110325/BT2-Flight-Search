@@ -1,3 +1,5 @@
+import { Sorter } from "./Sorter";
+
 export interface QueryParams {
   page: number;
   departureCode: string;
@@ -7,4 +9,5 @@ export interface QueryParams {
   noAdults?: number;
   currency: string;
   nonStops: boolean;
+  sortBy?: Sorter;
 }

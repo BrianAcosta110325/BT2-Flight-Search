@@ -2,6 +2,8 @@ package com.encora.flight_search_be.dto;
 
 import java.util.List;
 
+import com.encora.utils.FlightSorter;
+import com.encora.utils.Sorter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;

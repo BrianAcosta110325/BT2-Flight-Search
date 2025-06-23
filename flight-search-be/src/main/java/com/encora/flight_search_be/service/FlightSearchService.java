@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.encora.flight_search_be.client.AmadeusClient;
 import com.encora.flight_search_be.dto.*;
 import com.encora.utils.FlightService;
+import com.encora.utils.FlightSorter;
+import com.encora.utils.Sorter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +36,8 @@ public class FlightSearchService implements FlightService {
         LocalDate departureDate,
         Integer numberOfAdults,
         String currencyCode,
-        Boolean onlyNonStopFlights
+        Boolean onlyNonStopFlights,
+        Sorter sortBy
     ) {
         int pageInt = Integer.parseInt(page);
         int limit = 10;
@@ -65,6 +68,8 @@ public class FlightSearchService implements FlightService {
                 data,
                 new TypeReference<List<FlightSearchAmadeusResposeDto>>() {}
             );
+
+            FlightSorter.sort(flights, sortBy);
 
             List<FlightSearchResponseDto> result = new ArrayList<FlightSearchResponseDto>();
 

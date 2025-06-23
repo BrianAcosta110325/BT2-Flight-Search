@@ -15,6 +15,7 @@ import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
 import com.encora.flight_search_be.dto.AirportDto;
 import com.encora.flight_search_be.dto.SearchFlightResponseDto;
 import com.encora.flight_search_be.service.FlightSearchService;
+import com.encora.utils.Sorter;
 
 @RestController
 @RequestMapping("/api")
@@ -32,7 +33,8 @@ public class FlightSearchController {
         @RequestParam(required = false) LocalDate departureDate,
         @RequestParam(required = false) Integer numberOfAdults,
         @RequestParam String currency,
-        @RequestParam(required = false) Boolean nonStops
+        @RequestParam(required = false) Boolean nonStops,
+        @RequestParam(required = false) Sorter sortBy
     ) {
         return this.flightService.searchFlights(
             page,
@@ -41,7 +43,8 @@ public class FlightSearchController {
             departureDate, 
             numberOfAdults, 
             currency, 
-            nonStops
+            nonStops,
+            sortBy
         );
     }
 

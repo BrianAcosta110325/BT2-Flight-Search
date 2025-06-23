@@ -45,6 +45,7 @@ function Filter({ onApplyFilter }: FilterProps) {
     if (!query.departureDate) {
       newErrors.departureDate = 'Departure date is required.';
     } else if (
+      console.log(departureDateObj, today),
       departureDateObj &&
       departureDateObj.getTime() < new Date(today.setHours(0, 0, 0, 0)).getTime()
     ) {
