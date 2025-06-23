@@ -3,18 +3,29 @@ package com.encora.utils;
 import java.util.List;
 import java.time.LocalDate;
 
+import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
 import com.encora.flight_search_be.dto.AirportDto;
-import com.encora.flight_search_be.dto.FlightSearchResponseDto;
+import com.encora.flight_search_be.dto.SearchFlightResponseDto;
 
 public interface FlightService {
-    List<FlightSearchResponseDto> searchFlights(
-        String departureCode,
-        String arrivalCode,
+    SearchFlightResponseDto searchFlights(
+        String page,
+        String originAirportCode,
+        String destinationAirportCode,
         LocalDate departureDate,
-        Integer noAdults,
-        String currency,
-        boolean nonStop
+        Integer numberOfAdults,
+        String currencyCode,
+        Boolean onlyNonStopFlights,
+        Sorter sortBy
     );
 
     List<AirportDto> searchAirports(String query);
+
+    String searchAirportByCode(String code);
+
+    String searchAirlineByCode(String code);
+
+    FlightSearchDetailedResponseDto searchFlightById(
+        String id
+    );
 }

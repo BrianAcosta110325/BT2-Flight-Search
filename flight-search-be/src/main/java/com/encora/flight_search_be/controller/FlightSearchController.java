@@ -5,11 +5,16 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
+import com.encora.flight_search_be.dto.AirportDto;
+import com.encora.flight_search_be.service.FlightSearchService;
+import com.encora.utils.Sorter;
 import com.encora.flight_search_be.dto.AirportDto;
 import com.encora.flight_search_be.dto.FlightSearchResponseDto;
 import com.encora.flight_search_be.service.FlightSearchService;
@@ -23,6 +28,51 @@ public class FlightSearchController {
     private FlightSearchService flightService;
     
     @GetMapping("/searchFlights")
+    public SearchFlightResponseDto searchFlights(
+        @RequestParam String page,
+        @RequestParam String departureCode,
+        @RequestParam String arrivalCode, 
+        @RequestParam(required = false) LocalDate departureDate,
+        @RequestParam(required = false) Integer numberOfAdults,
+        @RequestParam String currency,
+        @RequestParam(required = false) Boolean nonStops,
+        @RequestParam(required = false) Sorter sortBy
+    ) {
+        return this.flightService.searchFlights(
+            page,
+            departureCode, 
+            arrivalCode, 
+            departureDate, 
+            numberOfAdults, 
+            currency, 
+            nonStops,
+            sortBy
+        );
+    }
+
+    @GetMapping("/searchFlightById/{id}")
+    public FlightSearchDetailedResponseDto searchFlightById(
+        @PathVariable String id
+    ) {
+        return this.flightService.searchFlightById(
+            id
+        );
+    }
+
+    @GetMapping("/searchAirports/{query}")
+    public List<AirportDto> searchAirports(@PathVariable() String query) {
+        return this.flightService.searchAirports(query);
+    }
+
+    @GetMapping("/searchAirportByCode/{code}")
+    public String searchAirportByCode(@PathVariable() String code) {
+        return this.flightService.searchAirportByCode(code);
+    }
+
+    @GetMapping("/searchAirlineByCode/{code}")
+    public String searchAirlineByCode(@PathVariable String code) {
+        return this.flightService.searchAirlineByCode(code);
+    }
     public List<FlightSearchResponseDto> searchFlights(
         @RequestParam String originAirportCode,
         @RequestParam String destinationAirportCode, 

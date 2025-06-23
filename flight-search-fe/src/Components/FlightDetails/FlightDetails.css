@@ -1,0 +1,47 @@
+.segment-card {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.segment-info {
+  flex: 2;
+}
+
+.fare-box {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  margin-left: 1rem;
+  border-radius: 4px;
+}
+
+.breakdown, .per-traveler {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  flex: 1;
+  border-radius: 8px;
+}
+
+
+.segment-card {
+  background-color: #f8f9fa;
+}
+
+.per-traveler-box {
+  text-align: center;
+}
+
+.flight-details-container {
+  font-family: Arial, sans-serif;
+}
+
+.price-section {
+  background-color: #ffffff;
+}
+
+.per-traveler-box {
+  background-color: #f0f0f0;
+}

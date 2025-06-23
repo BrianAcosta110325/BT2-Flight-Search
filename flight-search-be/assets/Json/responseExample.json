@@ -1,0 +1,231 @@
+{
+    "type": "flight-offer",
+    "id": "1",
+    "source": "GDS",
+    "instantTicketingRequired": false,
+    "nonHomogeneous": false,
+    "oneWay": false,
+    "isUpsellOffer": false,
+    "lastTicketingDate": "2025-06-13",
+    "lastTicketingDateTime": "2025-06-13",
+    "numberOfBookableSeats": 9,
+    "itineraries": [
+      {
+        "duration": "PT12H39M",
+        "segments": [
+          {
+            "departure": {
+              "iataCode": "MEX",
+              "terminal": "1",
+              "at": "2025-06-12T23:20:00"
+            },
+            "arrival": {
+              "iataCode": "BOG",
+              "terminal": "1",
+              "at": "2025-06-13T04:50:00"
+            },
+            "carrierCode": "AV",
+            "number": "23",
+            "aircraft": {
+              "code": "320"
+            },
+            "duration": "PT4H30M",
+            "id": "7",
+            "numberOfStops": 0,
+            "blacklistedInEU": false
+          },
+          {
+            "departure": {
+              "iataCode": "BOG",
+              "terminal": "1",
+              "at": "2025-06-13T07:00:00"
+            },
+            "arrival": {
+              "iataCode": "JFK",
+              "terminal": "4",
+              "at": "2025-06-13T13:59:00"
+            },
+            "carrierCode": "AV",
+            "number": "210",
+            "aircraft": {
+              "code": "32N"
+            },
+            "duration": "PT5H59M",
+            "id": "8",
+            "numberOfStops": 0,
+            "blacklistedInEU": false
+          }
+        ]
+      }
+    ],
+    "price": {
+      "currency": "USD",
+      "total": "340.29",
+      "base": "214.00",
+      "fees": [
+        {
+          "amount": "0.00",
+          "type": "SUPPLIER"
+        },
+        {
+          "amount": "0.00",
+          "type": "TICKETING"
+        }
+      ],
+      "grandTotal": "340.29",
+      "additionalServices": [
+        {
+          "amount": "65.00",
+          "type": "CHECKED_BAGS"
+        }
+      ]
+    },
+    "pricingOptions": {
+      "fareType": ["PUBLISHED"],
+      "includedCheckedBagsOnly": true
+    },
+    "validatingAirlineCodes": ["AV"],
+    "travelerPricings": [
+      {
+        "travelerId": "1",
+        "fareOption": "STANDARD",
+        "travelerType": "ADULT",
+        "price": {
+          "currency": "USD",
+          "total": "340.29",
+          "base": "214.00"
+        },
+        "fareDetailsBySegment": [
+          {
+            "segmentId": "7",
+            "cabin": "ECONOMY",
+            "fareBasis": "SEOB2BR9",
+            "brandedFare": "CLASSIC",
+            "brandedFareLabel": "CLASSIC",
+            "class": "S",
+            "includedCheckedBags": {
+              "quantity": 1
+            },
+            "includedCabinBags": {
+              "quantity": 1
+            },
+            "amenities": [
+              {
+                "description": "2ND CHECKED BAG 23KG 158 LCM",
+                "isChargeable": true,
+                "amenityType": "BAGGAGE",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "3RD CHECKED BAG 23KG 158 LCM",
+                "isChargeable": true,
+                "amenityType": "BAGGAGE",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "PRE RESERVED SEAT ASSIGNMENT",
+                "isChargeable": false,
+                "amenityType": "PRE_RESERVED_SEAT",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "AIRPORT CHECK IN COUNTER",
+                "isChargeable": false,
+                "amenityType": "TRAVEL_SERVICES",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "PRIORITY BOARDING",
+                "isChargeable": true,
+                "amenityType": "TRAVEL_SERVICES",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "MILEAGE ACCRUAL",
+                "isChargeable": false,
+                "amenityType": "BRANDED_FARES",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              }
+            ]
+          },
+          {
+            "segmentId": "8",
+            "cabin": "ECONOMY",
+            "fareBasis": "SEOB2BR9",
+            "brandedFare": "CLASSIC",
+            "brandedFareLabel": "CLASSIC",
+            "class": "S",
+            "includedCheckedBags": {
+              "quantity": 1
+            },
+            "includedCabinBags": {
+              "quantity": 1
+            },
+            "amenities": [
+              {
+                "description": "2ND CHECKED BAG 23KG 158 LCM",
+                "isChargeable": true,
+                "amenityType": "BAGGAGE",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "3RD CHECKED BAG 23KG 158 LCM",
+                "isChargeable": true,
+                "amenityType": "BAGGAGE",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "PRE RESERVED SEAT ASSIGNMENT",
+                "isChargeable": false,
+                "amenityType": "PRE_RESERVED_SEAT",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "AIRPORT CHECK IN COUNTER",
+                "isChargeable": false,
+                "amenityType": "TRAVEL_SERVICES",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "PRIORITY BOARDING",
+                "isChargeable": true,
+                "amenityType": "TRAVEL_SERVICES",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              },
+              {
+                "description": "MILEAGE ACCRUAL",
+                "isChargeable": false,
+                "amenityType": "BRANDED_FARES",
+                "amenityProvider": {
+                  "name": "BrandedFare"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  
