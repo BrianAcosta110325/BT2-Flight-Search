@@ -28,7 +28,7 @@ function Filter({ onApplyFilter }: FilterProps) {
 
   return (
     <div className="container mt-4">
-      <div className="card p-4">
+      <div className="card card-filter p-4">
         {/* Airports Row */}
         <div className="row mb-3">
           <div className="col-6">

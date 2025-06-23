@@ -7,8 +7,8 @@ export const SearchFlightsService = {
         return Api.get(`searchFlights`, params)
     },
 
-    getDetailedFlight: async (flight: Flight) => {
-        return Api.get(`searchFlightById/${flight.id}`)
+    getDetailedFlight: async (flightId: String) => {
+        return Api.get(`searchFlightById/${flightId}`)
     },
 
     getAirports: async (query: String) => {

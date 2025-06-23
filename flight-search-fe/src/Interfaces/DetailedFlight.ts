@@ -1,4 +1,4 @@
-export interface FlightSearchDetailedResponseDto {
+export interface DetailedFlight {
   id: string;
 
   // Airports

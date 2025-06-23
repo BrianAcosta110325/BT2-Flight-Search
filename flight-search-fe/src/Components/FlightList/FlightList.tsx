@@ -1,4 +1,5 @@
 import { Flight } from '../../Interfaces/Flight';
+import { useNavigate } from 'react-router-dom';
 import './FlightList.css';
 
 interface FlightListProps {
@@ -12,6 +13,12 @@ function formatDateTime(datetime: string): string {
 }
 
 function FlightList({ flights, loading }: FlightListProps) {
+  const navigate = useNavigate();
+
+  const handleClick = (flightId: string) => {
+    navigate(`/flight-details/${flightId}`);
+  };
+
   if (loading) {
     return <p className="text-center mt-4">Loading flights...</p>;
   }
@@ -23,7 +30,14 @@ function FlightList({ flights, loading }: FlightListProps) {
   return (
     <div className="container mt-4">
       {flights.map((flight, index) => (
-        <div key={index} className="card mb-3 p-3 shadow-sm">
+        <div
+          key={index}
+          className="card card-flight-list mb-3 p-3 shadow-sm"
+          style={{ cursor: 'pointer' }}
+          onClick={() => {
+            handleClick(flight.id);
+          }}
+        >
           <div className="row align-items-center">
             {/* Horarios y ruta */}
             <div className="col-md-6">

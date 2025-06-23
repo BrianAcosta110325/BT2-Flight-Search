@@ -46,6 +46,18 @@ public class FlightSearchAmadeusResposeDto {
         private String id;
         private int numberOfStops;
         private boolean blacklistedInEU;
+
+        // Nuevo campo para mapear los "stops" si los hay
+        private List<Stop> stops;
+    }
+
+    @Getter
+    @Setter
+    public static class Stop {
+        private String iataCode;
+        private String arrivalAt;
+        private String departureAt;
+        private String duration;
     }
 
     @Getter

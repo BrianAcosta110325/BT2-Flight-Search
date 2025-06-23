@@ -1,12 +1,12 @@
 import { useState, useCallback } from 'react';
 import { QueryParams } from '../../Interfaces/QueryParams';
 import Filter from '../Filter/Filter';
-import './App.css';
+import './Home.css';
 import { Flight } from '../../Interfaces/Flight';
 import { SearchFlightsService } from '../../Services/FlightSearchService';
 import FlightList from '../FlightList/FlightList';
 
-function App() {
+function Home() {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -15,7 +15,7 @@ function App() {
 
   const applyFilter = useCallback((newFilter: QueryParams) => {
     setLoading(true);
-    setFilter(newFilter); // en caso de que quieras almacenarlo
+    setFilter(newFilter);
 
     const queryParams: QueryParams = {
       ...newFilter,
@@ -41,4 +41,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;

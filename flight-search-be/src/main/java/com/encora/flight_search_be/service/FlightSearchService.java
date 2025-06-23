@@ -45,6 +45,8 @@ public class FlightSearchService implements FlightService {
         numberOfAdults = numberOfAdults != null ? numberOfAdults : 1;
         onlyNonStopFlights = onlyNonStopFlights != null ? onlyNonStopFlights : false;
 
+        System.out.println(paramsMap(page, originAirportCode, destinationAirportCode, departureDate, numberOfAdults, currencyCode, onlyNonStopFlights));
+
         JsonNode data = amadeusClient.searchFlights(paramsMap(
             page,
             originAirportCode,
