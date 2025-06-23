@@ -26,7 +26,6 @@ function Home() {
       setFlights(data.flights);
       setTotalPages(data.totalPages);
       setLoading(false);
-      console.log('Flights fetched:', data.flights);
     }).catch(err => {
       console.error('Error fetching flights:', err);
       setLoading(false);
