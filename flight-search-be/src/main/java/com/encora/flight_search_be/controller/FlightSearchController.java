@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.encora.flight_search_be.dto.FlightSearchDetailedResponseDto;
 import com.encora.flight_search_be.dto.AirportDto;
-import com.encora.flight_search_be.dto.SearchFlightResponseDto;
 import com.encora.flight_search_be.service.FlightSearchService;
 import com.encora.utils.Sorter;
+import com.encora.flight_search_be.dto.AirportDto;
+import com.encora.flight_search_be.dto.FlightSearchResponseDto;
+import com.encora.flight_search_be.service.FlightSearchService;
 
 @RestController
 @RequestMapping("/api")
@@ -70,5 +72,27 @@ public class FlightSearchController {
     @GetMapping("/searchAirlineByCode/{code}")
     public String searchAirlineByCode(@PathVariable String code) {
         return this.flightService.searchAirlineByCode(code);
+    }
+    public List<FlightSearchResponseDto> searchFlights(
+        @RequestParam String originAirportCode,
+        @RequestParam String destinationAirportCode, 
+        @RequestParam(required = false) LocalDate departureDate,
+        @RequestParam Integer numberOfAdults,
+        @RequestParam String currencyCode,
+        @RequestParam(required = false) Boolean onlyNonStopFlights
+    ) {
+        return this.flightService.searchFlights(
+            originAirportCode, 
+            destinationAirportCode, 
+            departureDate, 
+            numberOfAdults, 
+            currencyCode, 
+            onlyNonStopFlights
+        );
+    }
+
+    @GetMapping("/searchAirports")
+    public List<AirportDto> searchAirports(@RequestParam() String query) {
+        return this.flightService.searchAirports(query);
     }
 }

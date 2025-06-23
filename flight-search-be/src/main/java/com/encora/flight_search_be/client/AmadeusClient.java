@@ -15,6 +15,11 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.beans.factory.annotation.Value; 
+import org.springframework.http.*;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
 @Component
 public class AmadeusClient {
     
@@ -91,6 +96,15 @@ public class AmadeusClient {
         int expiresIn = (int) responseBody.get(EXPIRES_IN);
         tokenExpiration = System.currentTimeMillis() + (expiresIn * 1000L);
 
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> responseBody = response.getBody();
+            accessToken = (String) responseBody.get(ACCESS_TOKEN);
+            int expiresIn = (int) responseBody.get(EXPIRES_IN);
+            tokenExpiration = System.currentTimeMillis() + (expiresIn * 1000L);
+        } else {
+            throw new RuntimeException("Error obtaining Amadeus token");
+        }
+
         return accessToken;
     }
 
@@ -98,6 +112,8 @@ public class AmadeusClient {
     public JsonNode searchFlights(Map<String, String> params) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(getAccessToken());
+    public ResponseEntity<String> searchFlights(Map<String, String> params) {
+        HttpHeaders headers = getHeaders();
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
@@ -105,6 +121,7 @@ public class AmadeusClient {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(
+        return restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 requestEntity,
@@ -123,6 +140,8 @@ public class AmadeusClient {
     }
 
     @Cacheable(value = "airportByQuery", key = "#query", condition = "#query != null")
+        );
+    }
     public ResponseEntity<String> searchAirports(String query) {
         HttpHeaders headers = getHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -203,7 +222,6 @@ public class AmadeusClient {
         }
         return "";
     }
-  
     private String getTockenBody () {
         return TOKEN_BODY.replace("{clientId}", clientId)
         .replace("{clientSecret}", clientSecret);

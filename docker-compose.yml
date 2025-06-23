@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./flight-search-be:/app
+    working_dir: /app
     ports:
       - 8080:8080
     environment:
@@ -25,4 +26,6 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
-
+    ports:
+      - 3000:3000
+    command: npm start
