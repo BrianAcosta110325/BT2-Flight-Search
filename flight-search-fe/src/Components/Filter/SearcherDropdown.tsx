@@ -3,7 +3,7 @@ import { Dropdown } from "react-bootstrap";
 import { SearchFlightsService } from "../../Services/FlightSearchService";
 
 interface Airport {
-  code: string;
+  iataCode: string;
   name: string;
 }
 
@@ -15,40 +15,38 @@ export const SearcherDropdown = ({ onSearch }: SearcherDropdownProps) => {
   const [show, setShow] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [items, setItems] = useState<Airport[]>([]);
-  const [selectedCode, setSelectedCode] = useState<string>("");
+  const [selectedCode, setSelectedCode] = useState<string>('');
+  const [selectedName, setSelectedName] = useState<string>('');
 
   const handleToggle = (isOpen: boolean) => {
     setShow(isOpen);
     if (!isOpen) {
       setInputValue('');
       setItems([]);
-      setSelectedCode('');
     }
   };
 
   const handleSearch = async () => {
     if (inputValue.trim().length < 2) return;
     try {
-      console.log("Buscando aeropuertos con:", inputValue);
       const airports = await SearchFlightsService.getAirports(inputValue);
       setItems(airports);
-      console.log("Aeropuertos encontrados:", airports);
     } catch (error) {
       console.error("Error al buscar aeropuertos:", error);
     }
   };
 
-  const handleSelect = () => {
-    if (selectedCode) {
-      onSearch(selectedCode);
-      setShow(false);
-    }
+  const handleItemClick = (code: string, name: string) => {
+    setSelectedCode(code);
+    setSelectedName(name);
+    onSearch(code); // Notifica al padre
+    setShow(false); // Cierra el dropdown
   };
 
   return (
     <Dropdown show={show} onToggle={handleToggle}>
       <Dropdown.Toggle variant="primary" id="dropdown-basic">
-        Selecciona aeropuerto
+        {selectedCode ? `${selectedCode} - ${selectedName}` : "Selecciona aeropuerto"}
       </Dropdown.Toggle>
 
       <Dropdown.Menu style={{ minWidth: '300px', padding: '1rem' }}>
@@ -66,22 +64,14 @@ export const SearcherDropdown = ({ onSearch }: SearcherDropdownProps) => {
         <div className="dropdown-list mb-2" style={{ maxHeight: 200, overflowY: 'auto' }}>
           {items.map((item) => (
             <Dropdown.Item
-              key={item.code}
-              onClick={() => setSelectedCode(item.code)}
-              active={selectedCode === item.code}
+              key={item.iataCode}
+              onClick={() => handleItemClick(item.iataCode, item.name)}
+              active={selectedCode === item.iataCode}
             >
-              {item.code} - {item.name}
+              {item.iataCode} - {item.name}
             </Dropdown.Item>
           ))}
         </div>
-
-        <button
-          className="btn btn-sm btn-success w-100"
-          onClick={handleSelect}
-          disabled={!selectedCode}
-        >
-          Seleccionar aeropuerto
-        </button>
       </Dropdown.Menu>
     </Dropdown>
   );

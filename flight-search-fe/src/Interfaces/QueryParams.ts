@@ -3,6 +3,7 @@ export interface QueryParams {
   departureCode: string;
   arrivalCode: string;
   departureDate?: string;
+  returnDate?: string;
   noAdults?: number;
   currency: string;
   nonStops: boolean;

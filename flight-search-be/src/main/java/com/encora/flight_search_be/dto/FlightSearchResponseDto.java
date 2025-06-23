@@ -49,10 +49,10 @@ public class FlightSearchResponseDto {
 
     public FlightSearchResponseDto(FlightSearchAmadeusResposeDto flightSearchAmadeusResposeDto, AmadeusClient amadeusClient) {
         this.id = flightSearchAmadeusResposeDto.getId();
-        this.departureAirportName = amadeusClient.searchAirportByCode(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getDeparture().getIataCode());
-        this.departureAirportCode = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getDeparture().getIataCode();
-        this.arrivalAirportName = amadeusClient.searchAirportByCode(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().size() - 1).getArrival().getIataCode());
-        this.arrivalAirportCode = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().size() - 1).getArrival().getIataCode();
+        this.departureAirportName = amadeusClient.searchAirportByCode(getDepartureAirportCode());
+        this.departureAirportCode = flightSearchAmadeusResposeDto.getDepartureCode();
+        this.arrivalAirportName = amadeusClient.searchAirportByCode(flightSearchAmadeusResposeDto.getArrivalCode());
+        this.arrivalAirportCode = flightSearchAmadeusResposeDto.getArrivalCode();
 
         this.departureDateTime = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(0).getDeparture().getAt();
         this.arrivalDateTime = flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().get(flightSearchAmadeusResposeDto.getItineraries().get(0).getSegments().size() - 1).getArrival().getAt();

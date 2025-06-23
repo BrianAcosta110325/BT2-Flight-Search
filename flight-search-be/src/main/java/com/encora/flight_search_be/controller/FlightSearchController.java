@@ -27,21 +27,21 @@ public class FlightSearchController {
     @GetMapping("/searchFlights")
     public SearchFlightResponseDto searchFlights(
         @RequestParam String page,
-        @RequestParam String originAirportCode,
-        @RequestParam String destinationAirportCode, 
+        @RequestParam String departureCode,
+        @RequestParam String arrivalCode, 
         @RequestParam(required = false) LocalDate departureDate,
-        @RequestParam Integer numberOfAdults,
-        @RequestParam String currencyCode,
-        @RequestParam(required = false) Boolean onlyNonStopFlights
+        @RequestParam(required = false) Integer numberOfAdults,
+        @RequestParam String currency,
+        @RequestParam(required = false) Boolean nonStops
     ) {
         return this.flightService.searchFlights(
             page,
-            originAirportCode, 
-            destinationAirportCode, 
+            departureCode, 
+            arrivalCode, 
             departureDate, 
             numberOfAdults, 
-            currencyCode, 
-            onlyNonStopFlights
+            currency, 
+            nonStops
         );
     }
 
@@ -49,21 +49,21 @@ public class FlightSearchController {
     public FlightSearchDetailedResponseDto searchFlightById(
         @PathVariable String id,
         @RequestParam String page,
-        @RequestParam String originAirportCode,
-        @RequestParam String destinationAirportCode,
+        @RequestParam String departureCode,
+        @RequestParam String arrivalCode,
         @RequestParam(required = false) LocalDate departureDate,
-        @RequestParam Integer numberOfAdults,
-        @RequestParam String currencyCode,
-        @RequestParam(required = false) Boolean onlyNonStopFlights
+        @RequestParam(required = false) Integer numberOfAdults,
+        @RequestParam String currency,
+        @RequestParam(required = false) Boolean nonStops
     ) {
         return this.flightService.searchFlightById(
             page,
-            originAirportCode, 
-            destinationAirportCode, 
+            departureCode, 
+            arrivalCode, 
             departureDate, 
             numberOfAdults, 
-            currencyCode, 
-            onlyNonStopFlights,
+            currency, 
+            nonStops,
             id
         );
     }
