@@ -4,6 +4,7 @@ import Filter from '../Filter/Filter';
 import './App.css';
 import { Flight } from '../../Interfaces/Flight';
 import { SearchFlightsService } from '../../Services/FlightSearchService';
+import FlightList from '../FlightList/FlightList';
 
 function App() {
   const [flights, setFlights] = useState<Flight[]>([]);
@@ -35,7 +36,7 @@ function App() {
   return (
     <div className="App">
       <Filter onApplyFilter={applyFilter} />
-      {/* Puedes mostrar los vuelos aquí */}
+      <FlightList flights={flights} loading={loading} />
     </div>
   );
 }

@@ -49,7 +49,7 @@ public class FlightSearchResponseDto {
 
     public FlightSearchResponseDto(FlightSearchAmadeusResposeDto flightSearchAmadeusResposeDto, AmadeusClient amadeusClient) {
         this.id = flightSearchAmadeusResposeDto.getId();
-        this.departureAirportName = amadeusClient.searchAirportByCode(getDepartureAirportCode());
+        this.departureAirportName = amadeusClient.searchAirportByCode(flightSearchAmadeusResposeDto.getDepartureCode());
         this.departureAirportCode = flightSearchAmadeusResposeDto.getDepartureCode();
         this.arrivalAirportName = amadeusClient.searchAirportByCode(flightSearchAmadeusResposeDto.getArrivalCode());
         this.arrivalAirportCode = flightSearchAmadeusResposeDto.getArrivalCode();
