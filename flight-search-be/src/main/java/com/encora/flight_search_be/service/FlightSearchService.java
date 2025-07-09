@@ -167,16 +167,6 @@ public class FlightSearchService implements FlightService {
         return amadeusClient.searchAirlineByCode(code);
     }
 
-    @Override
-    public String searchAirportByCode(String code) {
-        return amadeusClient.searchAirportByCode(code);
-    }
-
-    @Override
-    public String searchAirlineByCode(String code) {
-        return amadeusClient.searchAirlineByCode(code);
-    }
-
     private Map<String, String> paramsMap(
         String page,
         String originAirportCode,
